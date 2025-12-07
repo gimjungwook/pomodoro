@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Minimal pixel-style Pomodoro timer with heatmap tracking">
+    <meta name="keywords" content="pomodoro, timer, productivity, focus, pixel">
+    <meta name="author" content="Pomodoro App">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Pomodoro">
     <title>POMODORO</title>
+    <!-- Favicon - Pixel tomato -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='12' y='2' width='8' height='4' fill='%23228B22'/><rect x='10' y='6' width='12' height='4' fill='%23FF6347'/><rect x='8' y='10' width='16' height='4' fill='%23FF6347'/><rect x='6' y='14' width='20' height='8' fill='%23FF6347'/><rect x='8' y='22' width='16' height='4' fill='%23FF6347'/><rect x='10' y='26' width='12' height='4' fill='%23FF6347'/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
@@ -65,7 +74,7 @@
         /* Header */
         .header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             width: 100%;
             max-width: 800px;
@@ -75,22 +84,6 @@
         .title {
             font-size: 1.2rem;
             letter-spacing: 2px;
-        }
-
-        .theme-toggle {
-            background: var(--bg);
-            color: var(--primary);
-            border: none;
-            padding: 12px 16px;
-            font-family: inherit;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-
-        .theme-toggle:hover {
-            background: var(--primary);
-            color: var(--bg);
         }
 
         /* Main Layout */
@@ -518,11 +511,11 @@
             opacity: 0.5;
         }
 
-        /* Status indicator */
+        /* Status indicator - top right */
         .status-indicator {
             position: fixed;
             top: 20px;
-            left: 20px;
+            right: 20px;
             font-size: 0.4rem;
             opacity: 0.5;
             display: flex;
@@ -545,35 +538,51 @@
             50% { opacity: 0.3; }
         }
 
-        /* Notification permission button */
-        .notification-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
+        /* Advanced controls (RESET/SKIP/CUSTOM) - hidden by default */
+        .advanced-controls {
+            display: none;
+            gap: 20px;
+        }
+
+        .advanced-controls.show {
+            display: flex;
+        }
+
+        .advanced-only {
+            display: none;
+        }
+
+        .advanced-only.show {
+            display: block;
+        }
+
+        /* Footer buttons */
+        .footer-controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-btn {
             background: var(--bg);
             color: var(--primary);
             border: none;
-            padding: 8px 12px;
+            padding: 10px 16px;
             font-family: inherit;
-            font-size: 0.5rem;
+            font-size: 0.45rem;
             cursor: pointer;
-        }
-
-        .notification-btn:hover {
-            background: var(--primary);
-            color: var(--bg);
-        }
-
-        .notification-btn.granted {
             opacity: 0.5;
+            transition: all 0.1s;
         }
 
-        /* Keyboard hint */
-        .keyboard-hint {
-            margin-top: 30px;
-            font-size: 0.5rem;
-            opacity: 0.4;
-            text-align: center;
+        .footer-btn:hover {
+            opacity: 1;
+        }
+
+        .footer-btn.active {
+            opacity: 1;
         }
 
         /* Modal Base */
@@ -697,16 +706,11 @@
     <!-- Tooltip -->
     <div class="heatmap-tooltip" id="heatmapTooltip"></div>
 
-    <!-- Status indicator -->
+    <!-- Status indicator - top right -->
     <div class="status-indicator">
         <div class="status-dot" id="statusDot"></div>
         <span id="statusText">SAVED</span>
     </div>
-
-    <!-- Notification button -->
-    <button class="notification-btn pixel-border-thin" id="notificationBtn" aria-label="알림 설정">
-        NOTIFY
-    </button>
 
     <!-- Confirm Modal -->
     <div class="modal" id="confirmModal" role="dialog" aria-modal="true">
@@ -770,9 +774,6 @@
     <!-- Header -->
     <div class="header">
         <h1 class="title">POMODORO</h1>
-        <button class="theme-toggle pixel-border" aria-label="테마 변경">
-            <span id="themeIcon">DARK</span>
-        </button>
     </div>
 
     <!-- Main Container -->
@@ -787,7 +788,7 @@
                 <button class="mode-btn pixel-border" id="mode50" aria-label="50분 작업 10분 휴식">
                     50 / 10
                 </button>
-                <button class="mode-btn pixel-border" id="modeCustom" aria-label="커스텀 타이머 설정">
+                <button class="mode-btn pixel-border advanced-only" id="modeCustom" aria-label="커스텀 타이머 설정">
                     CUSTOM
                 </button>
             </div>
@@ -812,12 +813,14 @@
                 <button class="btn pixel-border" id="startBtn" aria-label="타이머 시작">
                     START
                 </button>
-                <button class="btn pixel-border" id="resetBtn" aria-label="타이머 리셋">
-                    RESET
-                </button>
-                <button class="btn pixel-border" id="skipBtn" aria-label="세션 스킵">
-                    SKIP
-                </button>
+                <div class="advanced-controls" id="advancedControls">
+                    <button class="btn pixel-border" id="resetBtn" aria-label="타이머 리셋">
+                        RESET
+                    </button>
+                    <button class="btn pixel-border" id="skipBtn" aria-label="세션 스킵">
+                        SKIP
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -859,8 +862,11 @@
         </div>
     </div>
 
-    <div class="keyboard-hint">
-        [SPACE] START/PAUSE &nbsp;&nbsp; [R] RESET
+    <!-- Footer Controls -->
+    <div class="footer-controls">
+        <button class="footer-btn" id="notificationBtn" aria-label="알림 설정">NOTIFY</button>
+        <button class="footer-btn" id="themeBtn" aria-label="테마 변경">DARK</button>
+        <button class="footer-btn" id="advancedBtn" aria-label="고급 설정">ADVANCED</button>
     </div>
 
     <script>
@@ -1025,9 +1031,10 @@
                     resetBtn: document.getElementById('resetBtn'),
                     skipBtn: document.getElementById('skipBtn'),
                     progressBar: document.getElementById('progressBar'),
-                    themeIcon: document.getElementById('themeIcon'),
-                    themeToggle: document.querySelector('.theme-toggle'),
+                    themeBtn: document.getElementById('themeBtn'),
                     notificationBtn: document.getElementById('notificationBtn'),
+                    advancedBtn: document.getElementById('advancedBtn'),
+                    advancedControls: document.getElementById('advancedControls'),
                     heatmapHours: document.getElementById('heatmapHours'),
                     heatmapDates: document.getElementById('heatmapDates'),
                     heatmapGrid: document.getElementById('heatmapGrid'),
@@ -1874,17 +1881,47 @@
                 const savedTheme = Storage.loadTheme();
                 if (savedTheme === 'dark') {
                     document.body.classList.add('dark');
-                    UI.elements.themeIcon.textContent = 'LIGHT';
+                    UI.elements.themeBtn.textContent = 'LIGHT';
                 }
 
-                UI.elements.themeToggle.addEventListener('click', () => this.toggle());
+                UI.elements.themeBtn.addEventListener('click', () => this.toggle());
             },
 
             toggle() {
                 document.body.classList.toggle('dark');
                 const isDark = document.body.classList.contains('dark');
-                UI.elements.themeIcon.textContent = isDark ? 'LIGHT' : 'DARK';
+                UI.elements.themeBtn.textContent = isDark ? 'LIGHT' : 'DARK';
                 Storage.saveTheme(isDark ? 'dark' : 'light');
+            }
+        };
+
+        // ==================== ADVANCED MODULE ====================
+        const Advanced = {
+            isEnabled: false,
+
+            init() {
+                this.isEnabled = localStorage.getItem('advancedMode') === 'true';
+                this.updateUI();
+                UI.elements.advancedBtn.addEventListener('click', () => this.toggle());
+            },
+
+            toggle() {
+                this.isEnabled = !this.isEnabled;
+                localStorage.setItem('advancedMode', this.isEnabled);
+                this.updateUI();
+            },
+
+            updateUI() {
+                const advancedElements = document.querySelectorAll('.advanced-only');
+                if (this.isEnabled) {
+                    UI.elements.advancedControls.classList.add('show');
+                    UI.elements.advancedBtn.classList.add('active');
+                    advancedElements.forEach(el => el.classList.add('show'));
+                } else {
+                    UI.elements.advancedControls.classList.remove('show');
+                    UI.elements.advancedBtn.classList.remove('active');
+                    advancedElements.forEach(el => el.classList.remove('show'));
+                }
             }
         };
 
@@ -2012,6 +2049,7 @@
             UI.init();
             Timer.init();
             Theme.init();
+            Advanced.init();
             Notification.init();
             Modals.init();
             SessionManager.init();
