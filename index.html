@@ -125,9 +125,19 @@
         }
 
         .session-label {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             margin-bottom: 20px;
-            letter-spacing: 4px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            max-width: 300px;
+            text-align: center;
+            line-height: 1.6;
+            word-break: keep-all;
+        }
+
+        .session-label:hover {
+            opacity: 0.7;
         }
 
         .session-label.break {
@@ -774,6 +784,21 @@
         </div>
     </div>
 
+    <!-- Quote Modal -->
+    <div class="modal" id="quoteModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
+            <h2>SET QUOTE</h2>
+            <div class="input-group">
+                <label>YOUR QUOTE</label>
+                <input type="text" id="quoteInput" maxlength="100" placeholder="WORK">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn pixel-border-thin" id="quoteCancel">CANCEL</button>
+                <button class="modal-btn primary pixel-border-thin" id="quoteSave">SAVE</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="header">
         <h1 class="title">POMODORO</h1>
@@ -1069,7 +1094,11 @@
                     sessionClose: document.getElementById('sessionClose'),
                     statStreak: document.getElementById('statStreak'),
                     statTime: document.getElementById('statTime'),
-                    statPeak: document.getElementById('statPeak')
+                    statPeak: document.getElementById('statPeak'),
+                    quoteModal: document.getElementById('quoteModal'),
+                    quoteInput: document.getElementById('quoteInput'),
+                    quoteSave: document.getElementById('quoteSave'),
+                    quoteCancel: document.getElementById('quoteCancel')
                 };
             },
 
@@ -1138,7 +1167,8 @@
 
             updateSessionLabel() {
                 if (Timer.state.isWorkSession) {
-                    this.elements.sessionLabel.textContent = 'WORK';
+                    const quote = Quote.get();
+                    this.elements.sessionLabel.textContent = quote || 'WORK';
                     this.elements.sessionLabel.classList.remove('break');
                 } else {
                     this.elements.sessionLabel.textContent = 'BREAK';
@@ -1884,6 +1914,40 @@
             }
         };
 
+        // ==================== QUOTE MODULE ====================
+        const Quote = {
+            quote: '',
+
+            init() {
+                this.quote = localStorage.getItem('pomodoroQuote') || '';
+                UI.elements.sessionLabel.addEventListener('click', () => this.showModal());
+                UI.elements.quoteSave.addEventListener('click', () => this.save());
+                UI.elements.quoteCancel.addEventListener('click', () => this.hideModal());
+                UI.updateSessionLabel();
+            },
+
+            get() {
+                return this.quote;
+            },
+
+            showModal() {
+                UI.elements.quoteInput.value = this.quote;
+                UI.elements.quoteModal.classList.add('show');
+                UI.elements.quoteInput.focus();
+            },
+
+            hideModal() {
+                UI.elements.quoteModal.classList.remove('show');
+            },
+
+            save() {
+                this.quote = UI.elements.quoteInput.value.trim();
+                localStorage.setItem('pomodoroQuote', this.quote);
+                UI.updateSessionLabel();
+                this.hideModal();
+            }
+        };
+
         // ==================== THEME MODULE ====================
         const Theme = {
             init() {
@@ -2104,6 +2168,7 @@
         function init() {
             UI.init();
             Timer.init();
+            Quote.init();
             Theme.init();
             Advanced.init();
             Notification.init();
