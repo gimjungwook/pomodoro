@@ -16,6 +16,7 @@
             --bg: #ffffff;
             --primary: #000000;
             --pixel-size: 4px;
+            --success: #22c55e;
         }
 
         .dark {
@@ -116,6 +117,16 @@
             padding: 40px 60px;
             margin-bottom: 30px;
             background: var(--bg);
+            transition: transform 0.3s;
+        }
+
+        .timer-container.celebrate {
+            animation: celebrate 0.5s ease-in-out 3;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .session-label {
@@ -168,7 +179,7 @@
         .progress-bar {
             height: 100%;
             background: var(--primary);
-            transition: width 1s linear;
+            transition: width 0.3s ease-out;
         }
 
         .progress-pixels {
@@ -184,6 +195,77 @@
                 var(--bg) 8px,
                 var(--bg) 10px
             );
+        }
+
+        /* Daily Goal Section */
+        .goal-section {
+            width: 100%;
+            padding: 15px 20px;
+            background: var(--bg);
+            margin-bottom: 10px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .goal-title {
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .goal-edit-btn {
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 0.4rem;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .goal-edit-btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .goal-progress-container {
+            width: 100%;
+            height: 12px;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease-out;
+        }
+
+        .goal-progress-fill.completed {
+            animation: goalComplete 1s ease-in-out infinite;
+        }
+
+        @keyframes goalComplete {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .goal-text {
+            font-size: 0.4rem;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .goal-text.completed {
+            opacity: 1;
+            color: var(--primary);
         }
 
         /* Controls */
@@ -224,17 +306,19 @@
         /* Mode Selection */
         .mode-selection {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .mode-btn {
             background: var(--bg);
             color: var(--primary);
             border: none;
-            padding: 12px 24px;
+            padding: 12px 20px;
             font-family: inherit;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             cursor: pointer;
             transition: all 0.1s;
         }
@@ -247,6 +331,80 @@
         .mode-btn.active {
             background: var(--primary);
             color: var(--bg);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            width: 100%;
+            padding: 15px 20px;
+            background: var(--bg);
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stats-title {
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .stats-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stats-tab {
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 0.35rem;
+            cursor: pointer;
+            transition: all 0.1s;
+            opacity: 0.5;
+        }
+
+        .stats-tab:hover {
+            opacity: 1;
+        }
+
+        .stats-tab.active {
+            background: var(--primary);
+            color: var(--bg);
+            opacity: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px 5px;
+        }
+
+        .stat-value {
+            font-size: 0.7rem;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.3rem;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 400px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         /* Heatmap Section - GitHub Style */
@@ -354,6 +512,11 @@
             transition: all 0.2s;
         }
 
+        .heatmap-cell:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
         .heatmap-cell.filled-1 { opacity: 0.4; background: var(--primary); }
         .heatmap-cell.filled-2 { opacity: 0.55; background: var(--primary); }
         .heatmap-cell.filled-3 { opacity: 0.7; background: var(--primary); }
@@ -419,39 +582,40 @@
         .legend-cell.l3 { opacity: 0.7; background: var(--primary); }
         .legend-cell.l4 { opacity: 1; background: var(--primary); }
 
+        /* Data Controls */
+        .data-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .data-btn {
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: 0.45rem;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .data-btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .data-btn input[type="file"] {
+            display: none;
+        }
+
         /* Empty state */
         .heatmap-empty {
             padding: 40px 20px;
             text-align: center;
             font-size: 0.5rem;
             opacity: 0.5;
-        }
-
-        /* Session Log */
-        .session-log {
-            margin-top: 20px;
-            width: 100%;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .session-log-title {
-            font-size: 0.5rem;
-            margin-bottom: 10px;
-            opacity: 0.6;
-        }
-
-        .session-entry {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.4rem;
-            padding: 5px 0;
-            border-bottom: 1px dashed var(--primary);
-            opacity: 0.8;
-        }
-
-        .session-entry:last-child {
-            border-bottom: none;
         }
 
         /* Status indicator */
@@ -512,8 +676,8 @@
             text-align: center;
         }
 
-        /* Confirm Modal */
-        .confirm-modal {
+        /* Modal Base */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -526,41 +690,42 @@
             z-index: 1000;
         }
 
-        .dark .confirm-modal {
+        .dark .modal {
             background: rgba(255,255,255,0.15);
         }
 
-        .confirm-modal.show {
+        .modal.show {
             display: flex;
         }
 
-        .confirm-modal-content {
+        .modal-content {
             background: var(--bg);
             padding: 40px 50px;
             text-align: center;
-            max-width: 320px;
+            max-width: 360px;
+            width: 90%;
         }
 
-        .confirm-modal h2 {
+        .modal h2 {
             font-size: 0.9rem;
             margin-bottom: 20px;
             letter-spacing: 2px;
         }
 
-        .confirm-modal p {
+        .modal p {
             font-size: 0.5rem;
             margin-bottom: 30px;
             line-height: 2;
             opacity: 0.7;
         }
 
-        .confirm-modal-buttons {
+        .modal-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
         }
 
-        .confirm-btn {
+        .modal-btn {
             background: var(--bg);
             color: var(--primary);
             border: none;
@@ -572,18 +737,55 @@
             transition: all 0.1s;
         }
 
-        .confirm-btn:hover {
+        .modal-btn:hover {
             background: var(--primary);
             color: var(--bg);
         }
 
-        .confirm-btn.danger {
+        .modal-btn.primary {
             background: var(--primary);
             color: var(--bg);
         }
 
-        .confirm-btn.danger:hover {
+        .modal-btn.primary:hover {
             opacity: 0.8;
+        }
+
+        /* Input Group */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.45rem;
+            margin-bottom: 8px;
+            opacity: 0.7;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            font-family: inherit;
+            font-size: 0.6rem;
+            background: var(--bg);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            box-shadow: 4px 4px 0 0 var(--primary);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-row .input-group {
+            flex: 1;
         }
     </style>
 </head>
@@ -598,18 +800,67 @@
     </div>
 
     <!-- Notification button -->
-    <button class="notification-btn pixel-border-thin" id="notificationBtn" onclick="requestNotificationPermission()">
+    <button class="notification-btn pixel-border-thin" id="notificationBtn" aria-label="알림 설정">
         NOTIFY
     </button>
 
     <!-- Confirm Modal -->
-    <div class="confirm-modal" id="confirmModal">
-        <div class="confirm-modal-content pixel-border">
+    <div class="modal" id="confirmModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
             <h2 id="confirmTitle">CONFIRM</h2>
             <p id="confirmMessage">Are you sure?</p>
-            <div class="confirm-modal-buttons">
-                <button class="confirm-btn pixel-border-thin" id="confirmCancel">CANCEL</button>
-                <button class="confirm-btn danger pixel-border-thin" id="confirmOk">OK</button>
+            <div class="modal-buttons">
+                <button class="modal-btn pixel-border-thin" id="confirmCancel">CANCEL</button>
+                <button class="modal-btn primary pixel-border-thin" id="confirmOk">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Settings Modal -->
+    <div class="modal" id="goalModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
+            <h2>DAILY GOAL</h2>
+            <div class="input-group">
+                <label>TARGET (MINUTES)</label>
+                <input type="number" id="goalInput" min="1" max="480" value="120">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn pixel-border-thin" id="goalCancel">CANCEL</button>
+                <button class="modal-btn primary pixel-border-thin" id="goalSave">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Timer Modal -->
+    <div class="modal" id="customModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
+            <h2>CUSTOM TIMER</h2>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>WORK (MIN)</label>
+                    <input type="number" id="customWorkInput" min="1" max="120" value="25">
+                </div>
+                <div class="input-group">
+                    <label>BREAK (MIN)</label>
+                    <input type="number" id="customBreakInput" min="1" max="60" value="5">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn pixel-border-thin" id="customCancel">CANCEL</button>
+                <button class="modal-btn primary pixel-border-thin" id="customSave">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Options Modal -->
+    <div class="modal" id="importModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
+            <h2>IMPORT DATA</h2>
+            <p>How to handle existing data?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn pixel-border-thin" id="importCancel">CANCEL</button>
+                <button class="modal-btn pixel-border-thin" id="importMerge">MERGE</button>
+                <button class="modal-btn primary pixel-border-thin" id="importReplace">REPLACE</button>
             </div>
         </div>
     </div>
@@ -617,7 +868,7 @@
     <!-- Header -->
     <div class="header">
         <h1 class="title">POMODORO</h1>
-        <button class="theme-toggle pixel-border" onclick="toggleTheme()">
+        <button class="theme-toggle pixel-border" aria-label="테마 변경">
             <span id="themeIcon">DARK</span>
         </button>
     </div>
@@ -628,35 +879,80 @@
         <div class="timer-section">
             <!-- Mode Selection -->
             <div class="mode-selection">
-                <button class="mode-btn pixel-border active" id="mode25" onclick="setMode('25/5')">
+                <button class="mode-btn pixel-border active" id="mode25" aria-label="25분 작업 5분 휴식">
                     25 / 5
                 </button>
-                <button class="mode-btn pixel-border" id="mode50" onclick="setMode('50/10')">
+                <button class="mode-btn pixel-border" id="mode50" aria-label="50분 작업 10분 휴식">
                     50 / 10
+                </button>
+                <button class="mode-btn pixel-border" id="modeCustom" aria-label="커스텀 타이머 설정">
+                    CUSTOM
                 </button>
             </div>
 
             <!-- Timer -->
-            <div class="timer-container pixel-border">
+            <div class="timer-container pixel-border" id="timerContainer">
                 <div class="session-label" id="sessionLabel">WORK</div>
-                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-display" id="timerDisplay" role="timer" aria-live="polite" aria-atomic="true">25:00</div>
                 <div class="progress-container pixel-border-thin">
                     <div class="progress-bar" id="progressBar" style="width: 100%"></div>
                     <div class="progress-pixels"></div>
                 </div>
             </div>
 
+            <!-- Daily Goal -->
+            <div class="goal-section pixel-border-thin" id="goalSection">
+                <div class="goal-header">
+                    <span class="goal-title">DAILY GOAL</span>
+                    <button class="goal-edit-btn pixel-border-thin" id="goalEditBtn" aria-label="목표 수정">EDIT</button>
+                </div>
+                <div class="goal-progress-container pixel-border-thin">
+                    <div class="goal-progress-fill" id="goalProgressFill" style="width: 0%"></div>
+                </div>
+                <div class="goal-text" id="goalText">2H 0M LEFT</div>
+            </div>
+
             <!-- Controls -->
             <div class="controls">
-                <button class="btn pixel-border" id="startBtn" onclick="toggleTimer()">
+                <button class="btn pixel-border" id="startBtn" aria-label="타이머 시작">
                     START
                 </button>
-                <button class="btn pixel-border" onclick="resetTimer()">
+                <button class="btn pixel-border" id="resetBtn" aria-label="타이머 리셋">
                     RESET
                 </button>
-                <button class="btn pixel-border" onclick="skipSession()">
+                <button class="btn pixel-border" id="skipBtn" aria-label="세션 스킵">
                     SKIP
                 </button>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section pixel-border">
+            <div class="stats-header">
+                <span class="stats-title">STATS</span>
+                <div class="stats-tabs">
+                    <button class="stats-tab active" data-period="today">TODAY</button>
+                    <button class="stats-tab" data-period="week">WEEK</button>
+                    <button class="stats-tab" data-period="all">ALL</button>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value" id="statStreak">0</span>
+                    <span class="stat-label">STREAK</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statTime">0H</span>
+                    <span class="stat-label">TIME</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statPeak">--</span>
+                    <span class="stat-label">PEAK</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="statSessions">0</span>
+                    <span class="stat-label">SESSIONS</span>
+                </div>
             </div>
         </div>
 
@@ -669,9 +965,7 @@
 
             <div class="heatmap-container" id="heatmapContainer">
                 <!-- Y축: 시간 라벨 -->
-                <div class="heatmap-hours" id="heatmapHours">
-                    <!-- 00-23 시간 라벨 -->
-                </div>
+                <div class="heatmap-hours" id="heatmapHours"></div>
 
                 <!-- 그리드 영역 -->
                 <div class="heatmap-grid-wrapper">
@@ -693,6 +987,15 @@
                     <span>MORE</span>
                 </div>
             </div>
+
+            <!-- Data Controls -->
+            <div class="data-controls">
+                <button class="data-btn pixel-border-thin" id="exportBtn" aria-label="데이터 내보내기">EXPORT</button>
+                <label class="data-btn pixel-border-thin" aria-label="데이터 가져오기">
+                    IMPORT
+                    <input type="file" id="importInput" accept=".json">
+                </label>
+            </div>
         </div>
     </div>
 
@@ -701,767 +1004,1277 @@
     </div>
 
     <script>
-        // ==================== DATA STRUCTURES ====================
-        // State
-        let state = {
-            mode: '25/5',
-            isRunning: false,
-            isWorkSession: true,
-            timeRemaining: 25 * 60,
-            totalTime: 25 * 60,
-            completedPomodoros: 0,
-            intervalId: null,
-            sessionStartTime: null,  // When current session started
-            lastTick: null           // Last update timestamp
-        };
+    (function() {
+        'use strict';
 
-        // Mode configurations
-        const modes = {
-            '25/5': { work: 25 * 60, break: 5 * 60 },
-            '50/10': { work: 50 * 60, break: 10 * 60 }
-        };
+        // ==================== STORAGE MODULE ====================
+        const Storage = {
+            getDateKey(date = new Date()) {
+                return date.toISOString().split('T')[0];
+            },
 
-        // ==================== DOM ELEMENTS ====================
-        const timerDisplay = document.getElementById('timerDisplay');
-        const sessionLabel = document.getElementById('sessionLabel');
-        const startBtn = document.getElementById('startBtn');
-        const progressBar = document.getElementById('progressBar');
-        const themeIcon = document.getElementById('themeIcon');
-        const notificationBtn = document.getElementById('notificationBtn');
-        const heatmapContainer = document.getElementById('heatmapContainer');
-        const heatmapHours = document.getElementById('heatmapHours');
-        const heatmapDates = document.getElementById('heatmapDates');
-        const heatmapGrid = document.getElementById('heatmapGrid');
-        const heatmapTooltip = document.getElementById('heatmapTooltip');
-        const totalTimeEl = document.getElementById('totalTime');
-        const totalSessionsEl = document.getElementById('totalSessions');
-        const confirmModal = document.getElementById('confirmModal');
-        const confirmTitle = document.getElementById('confirmTitle');
-        const confirmMessage = document.getElementById('confirmMessage');
-        const confirmOk = document.getElementById('confirmOk');
-        const confirmCancel = document.getElementById('confirmCancel');
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
+            loadSessions() {
+                try {
+                    const data = localStorage.getItem('pomodoroSessions');
+                    return data ? JSON.parse(data) : {};
+                } catch (error) {
+                    console.error('Failed to load sessions:', error);
+                    return {};
+                }
+            },
 
-        // ==================== CUSTOM CONFIRM ====================
-        function showConfirm(title, message, okText = 'OK') {
-            return new Promise((resolve) => {
-                confirmTitle.textContent = title;
-                confirmMessage.textContent = message;
-                confirmOk.textContent = okText;
-                confirmModal.classList.add('show');
+            saveSessions(sessions) {
+                try {
+                    localStorage.setItem('pomodoroSessions', JSON.stringify(sessions));
+                    UI.showSaveIndicator();
+                } catch (error) {
+                    console.error('Failed to save sessions:', error);
+                    UI.showErrorIndicator();
+                }
+            },
 
-                const handleOk = () => {
-                    cleanup();
-                    resolve(true);
-                };
+            addSession(session) {
+                const sessions = this.loadSessions();
+                const dateKey = this.getDateKey();
 
-                const handleCancel = () => {
-                    cleanup();
-                    resolve(false);
-                };
+                if (!sessions[dateKey]) {
+                    sessions[dateKey] = [];
+                }
 
-                const handleKeydown = (e) => {
-                    if (e.key === 'Escape') handleCancel();
-                    if (e.key === 'Enter') handleOk();
-                };
+                sessions[dateKey].push(session);
+                this.saveSessions(sessions);
+                Heatmap.update();
+                Goals.updateProgress();
+                Stats.update();
+            },
 
-                const cleanup = () => {
-                    confirmModal.classList.remove('show');
-                    confirmOk.removeEventListener('click', handleOk);
-                    confirmCancel.removeEventListener('click', handleCancel);
-                    document.removeEventListener('keydown', handleKeydown);
-                };
+            loadState() {
+                try {
+                    const data = localStorage.getItem('pomodoroState');
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.error('Failed to load state:', error);
+                    return null;
+                }
+            },
 
-                confirmOk.addEventListener('click', handleOk);
-                confirmCancel.addEventListener('click', handleCancel);
-                document.addEventListener('keydown', handleKeydown);
-            });
-        }
+            saveState() {
+                try {
+                    const stateToSave = {
+                        mode: Timer.state.mode,
+                        isRunning: Timer.state.isRunning,
+                        isWorkSession: Timer.state.isWorkSession,
+                        timeRemaining: Timer.state.timeRemaining,
+                        totalTime: Timer.state.totalTime,
+                        completedPomodoros: Timer.state.completedPomodoros,
+                        sessionStartTime: Timer.state.sessionStartTime,
+                        lastTick: Date.now()
+                    };
+                    localStorage.setItem('pomodoroState', JSON.stringify(stateToSave));
+                    UI.showSaveIndicator();
+                } catch (error) {
+                    console.error('Failed to save state:', error);
+                }
+            },
 
-        // ==================== STORAGE FUNCTIONS ====================
-        function getDateKey(date = new Date()) {
-            return date.toISOString().split('T')[0];
-        }
+            clearState() {
+                try {
+                    localStorage.removeItem('pomodoroState');
+                } catch (error) {
+                    console.error('Failed to clear state:', error);
+                }
+            },
 
-        function loadSessions() {
-            const data = localStorage.getItem('pomodoroSessions');
-            return data ? JSON.parse(data) : {};
-        }
+            loadGoals() {
+                try {
+                    const data = localStorage.getItem('pomodoroGoals');
+                    return data ? JSON.parse(data) : { daily: 120 };
+                } catch (error) {
+                    console.error('Failed to load goals:', error);
+                    return { daily: 120 };
+                }
+            },
 
-        function saveSessions(sessions) {
-            localStorage.setItem('pomodoroSessions', JSON.stringify(sessions));
-            showSaveIndicator();
-        }
+            saveGoals(goals) {
+                try {
+                    localStorage.setItem('pomodoroGoals', JSON.stringify(goals));
+                } catch (error) {
+                    console.error('Failed to save goals:', error);
+                }
+            },
 
-        function addSession(session) {
-            const sessions = loadSessions();
-            const dateKey = getDateKey();
+            loadCustomMode() {
+                try {
+                    const data = localStorage.getItem('pomodoroCustomMode');
+                    return data ? JSON.parse(data) : { work: 25, break: 5 };
+                } catch (error) {
+                    console.error('Failed to load custom mode:', error);
+                    return { work: 25, break: 5 };
+                }
+            },
 
-            if (!sessions[dateKey]) {
-                sessions[dateKey] = [];
+            saveCustomMode(config) {
+                try {
+                    localStorage.setItem('pomodoroCustomMode', JSON.stringify(config));
+                } catch (error) {
+                    console.error('Failed to save custom mode:', error);
+                }
+            },
+
+            loadTheme() {
+                try {
+                    return localStorage.getItem('theme');
+                } catch (error) {
+                    return null;
+                }
+            },
+
+            saveTheme(theme) {
+                try {
+                    localStorage.setItem('theme', theme);
+                } catch (error) {
+                    console.error('Failed to save theme:', error);
+                }
             }
+        };
 
-            sessions[dateKey].push(session);
-            saveSessions(sessions);
-            updateHeatmap();
-        }
+        // ==================== UI MODULE ====================
+        const UI = {
+            elements: {},
 
-        function loadState() {
-            const data = localStorage.getItem('pomodoroState');
-            return data ? JSON.parse(data) : null;
-        }
+            init() {
+                this.elements = {
+                    timerDisplay: document.getElementById('timerDisplay'),
+                    timerContainer: document.getElementById('timerContainer'),
+                    sessionLabel: document.getElementById('sessionLabel'),
+                    startBtn: document.getElementById('startBtn'),
+                    resetBtn: document.getElementById('resetBtn'),
+                    skipBtn: document.getElementById('skipBtn'),
+                    progressBar: document.getElementById('progressBar'),
+                    themeIcon: document.getElementById('themeIcon'),
+                    themeToggle: document.querySelector('.theme-toggle'),
+                    notificationBtn: document.getElementById('notificationBtn'),
+                    heatmapHours: document.getElementById('heatmapHours'),
+                    heatmapDates: document.getElementById('heatmapDates'),
+                    heatmapGrid: document.getElementById('heatmapGrid'),
+                    heatmapTooltip: document.getElementById('heatmapTooltip'),
+                    totalTimeEl: document.getElementById('totalTime'),
+                    totalSessionsEl: document.getElementById('totalSessions'),
+                    confirmModal: document.getElementById('confirmModal'),
+                    confirmTitle: document.getElementById('confirmTitle'),
+                    confirmMessage: document.getElementById('confirmMessage'),
+                    confirmOk: document.getElementById('confirmOk'),
+                    confirmCancel: document.getElementById('confirmCancel'),
+                    statusDot: document.getElementById('statusDot'),
+                    statusText: document.getElementById('statusText'),
+                    goalModal: document.getElementById('goalModal'),
+                    goalInput: document.getElementById('goalInput'),
+                    goalSave: document.getElementById('goalSave'),
+                    goalCancel: document.getElementById('goalCancel'),
+                    goalEditBtn: document.getElementById('goalEditBtn'),
+                    goalProgressFill: document.getElementById('goalProgressFill'),
+                    goalText: document.getElementById('goalText'),
+                    customModal: document.getElementById('customModal'),
+                    customWorkInput: document.getElementById('customWorkInput'),
+                    customBreakInput: document.getElementById('customBreakInput'),
+                    customSave: document.getElementById('customSave'),
+                    customCancel: document.getElementById('customCancel'),
+                    mode25: document.getElementById('mode25'),
+                    mode50: document.getElementById('mode50'),
+                    modeCustom: document.getElementById('modeCustom'),
+                    exportBtn: document.getElementById('exportBtn'),
+                    importInput: document.getElementById('importInput'),
+                    importModal: document.getElementById('importModal'),
+                    importMerge: document.getElementById('importMerge'),
+                    importReplace: document.getElementById('importReplace'),
+                    importCancel: document.getElementById('importCancel'),
+                    statStreak: document.getElementById('statStreak'),
+                    statTime: document.getElementById('statTime'),
+                    statPeak: document.getElementById('statPeak'),
+                    statSessions: document.getElementById('statSessions'),
+                    statsTabs: document.querySelectorAll('.stats-tab')
+                };
+            },
 
-        function saveState() {
-            const stateToSave = {
-                mode: state.mode,
-                isRunning: state.isRunning,
-                isWorkSession: state.isWorkSession,
-                timeRemaining: state.timeRemaining,
-                totalTime: state.totalTime,
-                completedPomodoros: state.completedPomodoros,
-                sessionStartTime: state.sessionStartTime,
-                lastTick: Date.now()
-            };
-            localStorage.setItem('pomodoroState', JSON.stringify(stateToSave));
-            showSaveIndicator();
-        }
+            showSaveIndicator() {
+                this.elements.statusDot.classList.add('saving');
+                this.elements.statusText.textContent = 'SAVING...';
+                setTimeout(() => {
+                    this.elements.statusDot.classList.remove('saving');
+                    this.elements.statusText.textContent = 'SAVED';
+                }, 500);
+            },
 
-        function clearState() {
-            localStorage.removeItem('pomodoroState');
-        }
+            showErrorIndicator() {
+                this.elements.statusText.textContent = 'ERROR';
+                setTimeout(() => {
+                    this.elements.statusText.textContent = 'SAVED';
+                }, 2000);
+            },
 
-        function showSaveIndicator() {
-            statusDot.classList.add('saving');
-            statusText.textContent = 'SAVING...';
-            setTimeout(() => {
-                statusDot.classList.remove('saving');
-                statusText.textContent = 'SAVED';
-            }, 500);
-        }
+            showConfirm(title, message, okText = 'OK') {
+                return new Promise((resolve) => {
+                    this.elements.confirmTitle.textContent = title;
+                    this.elements.confirmMessage.textContent = message;
+                    this.elements.confirmOk.textContent = okText;
+                    this.elements.confirmModal.classList.add('show');
 
-        // ==================== RESUME LOGIC ====================
-        function checkForResume() {
-            const savedState = loadState();
+                    const handleOk = () => {
+                        cleanup();
+                        resolve(true);
+                    };
 
-            if (savedState && savedState.isRunning) {
-                // Calculate elapsed time since last tick
-                const elapsed = Math.floor((Date.now() - savedState.lastTick) / 1000);
-                const newTimeRemaining = savedState.timeRemaining - elapsed;
+                    const handleCancel = () => {
+                        cleanup();
+                        resolve(false);
+                    };
 
-                if (newTimeRemaining > 0) {
-                    // 자동으로 이어서 진행
-                    state.mode = savedState.mode;
-                    state.isWorkSession = savedState.isWorkSession;
-                    state.timeRemaining = newTimeRemaining;
-                    state.totalTime = savedState.totalTime;
-                    state.completedPomodoros = savedState.completedPomodoros;
-                    state.sessionStartTime = savedState.sessionStartTime;
+                    const handleKeydown = (e) => {
+                        if (e.key === 'Escape') handleCancel();
+                        if (e.key === 'Enter') handleOk();
+                    };
 
-                    updateDisplay();
-                    updateProgress();
-                    updateSessionLabel();
-                    updateModeButtons();
-                    updatePomodoroCounter();
+                    const cleanup = () => {
+                        this.elements.confirmModal.classList.remove('show');
+                        this.elements.confirmOk.removeEventListener('click', handleOk);
+                        this.elements.confirmCancel.removeEventListener('click', handleCancel);
+                        document.removeEventListener('keydown', handleKeydown);
+                    };
 
-                    // 자동 시작
-                    startTimer();
-                    return true;
+                    this.elements.confirmOk.addEventListener('click', handleOk);
+                    this.elements.confirmCancel.addEventListener('click', handleCancel);
+                    document.addEventListener('keydown', handleKeydown);
+                });
+            },
+
+            updateDisplay() {
+                const minutes = Math.floor(Timer.state.timeRemaining / 60);
+                const seconds = Timer.state.timeRemaining % 60;
+                this.elements.timerDisplay.textContent =
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            },
+
+            updateProgress() {
+                const progress = (Timer.state.timeRemaining / Timer.state.totalTime) * 100;
+                this.elements.progressBar.style.width = `${progress}%`;
+            },
+
+            updateSessionLabel() {
+                if (Timer.state.isWorkSession) {
+                    this.elements.sessionLabel.textContent = 'WORK';
+                    this.elements.sessionLabel.classList.remove('break');
                 } else {
-                    // Session would have completed
-                    handleMissedCompletion(savedState, elapsed);
+                    this.elements.sessionLabel.textContent = 'BREAK';
+                    this.elements.sessionLabel.classList.add('break');
+                }
+            },
+
+            updateDocumentTitle() {
+                const minutes = Math.floor(Timer.state.timeRemaining / 60);
+                const seconds = Timer.state.timeRemaining % 60;
+                const time = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                const session = Timer.state.isWorkSession ? 'WORK' : 'BREAK';
+                document.title = `${time} - ${session}`;
+            },
+
+            updateModeButtons() {
+                this.elements.mode25.classList.toggle('active', Timer.state.mode === '25/5');
+                this.elements.mode50.classList.toggle('active', Timer.state.mode === '50/10');
+                this.elements.modeCustom.classList.toggle('active', Timer.state.mode === 'custom');
+            },
+
+            celebrate() {
+                this.elements.timerContainer.classList.add('celebrate');
+                setTimeout(() => {
+                    this.elements.timerContainer.classList.remove('celebrate');
+                }, 1500);
+            }
+        };
+
+        // ==================== TIMER MODULE ====================
+        const Timer = {
+            state: {
+                mode: '25/5',
+                isRunning: false,
+                isWorkSession: true,
+                timeRemaining: 25 * 60,
+                totalTime: 25 * 60,
+                completedPomodoros: 0,
+                intervalId: null,
+                sessionStartTime: null,
+                lastTick: null
+            },
+
+            modes: {
+                '25/5': { work: 25 * 60, break: 5 * 60 },
+                '50/10': { work: 50 * 60, break: 10 * 60 },
+                'custom': { work: 25 * 60, break: 5 * 60 }
+            },
+
+            init() {
+                const customConfig = Storage.loadCustomMode();
+                this.modes.custom = {
+                    work: customConfig.work * 60,
+                    break: customConfig.break * 60
+                };
+            },
+
+            toggle() {
+                if (this.state.isRunning) {
+                    this.pause();
+                } else {
+                    this.start();
+                }
+            },
+
+            start() {
+                this.state.isRunning = true;
+                this.state.lastTick = Date.now();
+
+                if (!this.state.sessionStartTime) {
+                    this.state.sessionStartTime = Date.now();
+                }
+
+                UI.elements.startBtn.textContent = 'PAUSE';
+                UI.elements.startBtn.classList.add('active');
+                UI.elements.timerDisplay.classList.remove('paused');
+
+                Storage.saveState();
+
+                this.state.intervalId = setInterval(() => {
+                    this.state.timeRemaining--;
+                    this.state.lastTick = Date.now();
+
+                    UI.updateDisplay();
+                    UI.updateProgress();
+                    UI.updateDocumentTitle();
+
+                    // Save state every 10 seconds
+                    if (this.state.timeRemaining % 10 === 0) {
+                        Storage.saveState();
+                    }
+
+                    // Update heatmap every minute (실시간 반영)
+                    if (this.state.isWorkSession && (this.state.totalTime - this.state.timeRemaining) % 60 === 0) {
+                        Heatmap.update();
+                        Goals.updateProgress();
+                    }
+
+                    if (this.state.timeRemaining <= 0) {
+                        this.complete();
+                    }
+                }, 1000);
+            },
+
+            pause() {
+                this.state.isRunning = false;
+                UI.elements.startBtn.textContent = 'START';
+                UI.elements.startBtn.classList.remove('active');
+                UI.elements.timerDisplay.classList.add('paused');
+                clearInterval(this.state.intervalId);
+                document.title = 'POMODORO';
+
+                Storage.saveState();
+            },
+
+            async reset() {
+                const hasProgress = this.state.timeRemaining < this.state.totalTime;
+                if (this.state.isRunning || hasProgress) {
+                    const confirmed = await UI.showConfirm(
+                        'RESET?',
+                        'Current progress will be lost.',
+                        'RESET'
+                    );
+                    if (!confirmed) return;
+                }
+
+                const wasRunning = this.state.isRunning;
+                this.pause();
+
+                // Record partial session if was running
+                if (wasRunning && this.state.isWorkSession && this.state.sessionStartTime) {
+                    const elapsed = Math.floor((this.state.totalTime - this.state.timeRemaining) / 60);
+                    if (elapsed >= 1) {
+                        Storage.addSession({
+                            startTime: Utils.formatTime(new Date(this.state.sessionStartTime)),
+                            endTime: Utils.formatTime(new Date()),
+                            duration: elapsed,
+                            type: 'work',
+                            completed: false
+                        });
+                    }
+                }
+
+                this.state.isWorkSession = true;
+                this.state.timeRemaining = this.modes[this.state.mode].work;
+                this.state.totalTime = this.modes[this.state.mode].work;
+                this.state.sessionStartTime = null;
+                UI.elements.timerDisplay.classList.remove('paused');
+
+                UI.updateDisplay();
+                UI.updateProgress();
+                UI.updateSessionLabel();
+                Storage.clearState();
+            },
+
+            async skip() {
+                const sessionType = this.state.isWorkSession ? 'WORK' : 'BREAK';
+                const confirmed = await UI.showConfirm(
+                    `SKIP ${sessionType}?`,
+                    'Move to next session.',
+                    'SKIP'
+                );
+                if (!confirmed) return;
+                this.complete();
+            },
+
+            complete() {
+                this.pause();
+                Sound.play();
+                Notification.show();
+                UI.celebrate();
+
+                // Record completed session
+                if (this.state.isWorkSession && this.state.sessionStartTime) {
+                    Storage.addSession({
+                        startTime: Utils.formatTime(new Date(this.state.sessionStartTime)),
+                        endTime: Utils.formatTime(new Date()),
+                        duration: Math.floor(this.state.totalTime / 60),
+                        type: 'work',
+                        completed: true
+                    });
+
+                    this.state.completedPomodoros++;
+                }
+
+                // Switch to next session
+                if (this.state.isWorkSession) {
+                    this.state.timeRemaining = this.modes[this.state.mode].break;
+                    this.state.totalTime = this.modes[this.state.mode].break;
+                } else {
+                    this.state.timeRemaining = this.modes[this.state.mode].work;
+                    this.state.totalTime = this.modes[this.state.mode].work;
+                }
+
+                this.state.isWorkSession = !this.state.isWorkSession;
+                this.state.sessionStartTime = null;
+
+                UI.updateDisplay();
+                UI.updateProgress();
+                UI.updateSessionLabel();
+                Storage.clearState();
+            },
+
+            async setMode(mode) {
+                if (mode === 'custom') {
+                    Modals.showCustomModal();
+                    return;
+                }
+
+                if (this.state.isRunning || this.state.timeRemaining < this.state.totalTime) {
+                    const confirmed = await UI.showConfirm(
+                        'CHANGE MODE?',
+                        'Timer will be reset.',
+                        'CHANGE'
+                    );
+                    if (!confirmed) return;
+                }
+
+                this.applyMode(mode);
+            },
+
+            applyMode(mode) {
+                this.state.mode = mode;
+                UI.updateModeButtons();
+
+                this.pause();
+                this.state.isWorkSession = true;
+                this.state.timeRemaining = this.modes[this.state.mode].work;
+                this.state.totalTime = this.modes[this.state.mode].work;
+                this.state.sessionStartTime = null;
+                UI.elements.timerDisplay.classList.remove('paused');
+                UI.updateDisplay();
+                UI.updateProgress();
+                UI.updateSessionLabel();
+                Storage.clearState();
+            },
+
+            checkForResume() {
+                const savedState = Storage.loadState();
+
+                if (savedState && savedState.isRunning) {
+                    const elapsed = Math.floor((Date.now() - savedState.lastTick) / 1000);
+                    const newTimeRemaining = savedState.timeRemaining - elapsed;
+
+                    if (newTimeRemaining > 0) {
+                        this.state.mode = savedState.mode;
+                        this.state.isWorkSession = savedState.isWorkSession;
+                        this.state.timeRemaining = newTimeRemaining;
+                        this.state.totalTime = savedState.totalTime;
+                        this.state.completedPomodoros = savedState.completedPomodoros;
+                        this.state.sessionStartTime = savedState.sessionStartTime;
+
+                        UI.updateDisplay();
+                        UI.updateProgress();
+                        UI.updateSessionLabel();
+                        UI.updateModeButtons();
+
+                        this.start();
+                        return true;
+                    } else {
+                        this.handleMissedCompletion(savedState);
+                        return false;
+                    }
+                } else if (savedState) {
+                    this.restoreState(savedState);
                     return false;
                 }
-            } else if (savedState) {
-                // Was paused, just restore state
-                restoreState(savedState);
                 return false;
-            }
-            return false;
-        }
+            },
 
-        function handleMissedCompletion(savedState, elapsed) {
-            // Record the completed session
-            if (savedState.isWorkSession && savedState.sessionStartTime) {
-                const startTime = new Date(savedState.sessionStartTime);
-                const duration = Math.floor((savedState.totalTime) / 60);
+            handleMissedCompletion(savedState) {
+                if (savedState.isWorkSession && savedState.sessionStartTime) {
+                    const duration = Math.floor(savedState.totalTime / 60);
 
-                addSession({
-                    startTime: formatTime(startTime),
-                    endTime: formatTime(new Date(savedState.sessionStartTime + savedState.totalTime * 1000)),
-                    duration: duration,
-                    type: 'work',
-                    completed: true
-                });
-
-                state.completedPomodoros = savedState.completedPomodoros + 1;
-            }
-
-            // Reset to next session
-            state.mode = savedState.mode;
-            state.isWorkSession = !savedState.isWorkSession;
-            state.timeRemaining = state.isWorkSession
-                ? modes[state.mode].work
-                : modes[state.mode].break;
-            state.totalTime = state.timeRemaining;
-
-            updateDisplay();
-            updateProgress();
-            updateSessionLabel();
-            updateModeButtons();
-            updatePomodoroCounter();
-            clearState();
-        }
-
-        function restoreState(savedState) {
-            state.mode = savedState.mode;
-            state.isWorkSession = savedState.isWorkSession;
-            state.timeRemaining = savedState.timeRemaining;
-            state.totalTime = savedState.totalTime;
-            state.completedPomodoros = savedState.completedPomodoros;
-
-            updateDisplay();
-            updateProgress();
-            updateSessionLabel();
-            updateModeButtons();
-            updatePomodoroCounter();
-        }
-
-        // ==================== TIMER FUNCTIONS ====================
-        function toggleTimer() {
-            if (state.isRunning) {
-                pauseTimer();
-            } else {
-                startTimer();
-            }
-        }
-
-        function startTimer() {
-            state.isRunning = true;
-            state.lastTick = Date.now();
-
-            if (!state.sessionStartTime) {
-                state.sessionStartTime = Date.now();
-            }
-
-            startBtn.textContent = 'PAUSE';
-            startBtn.classList.add('active');
-            timerDisplay.classList.remove('paused');
-
-            saveState();
-
-            state.intervalId = setInterval(() => {
-                state.timeRemaining--;
-                state.lastTick = Date.now();
-
-                updateDisplay();
-                updateProgress();
-                updateDocumentTitle();
-
-                // Save state every 10 seconds
-                if (state.timeRemaining % 10 === 0) {
-                    saveState();
-                }
-
-                // Update heatmap every minute (실시간 반영)
-                if (state.isWorkSession && (state.totalTime - state.timeRemaining) % 60 === 0) {
-                    updateHeatmap();
-                }
-
-                if (state.timeRemaining <= 0) {
-                    completeSession();
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            state.isRunning = false;
-            startBtn.textContent = 'START';
-            startBtn.classList.remove('active');
-            timerDisplay.classList.add('paused');
-            clearInterval(state.intervalId);
-            document.title = 'POMODORO';
-
-            saveState();
-        }
-
-        async function resetTimer() {
-            // 진행 중이거나 시작된 세션이 있으면 확인
-            const hasProgress = state.timeRemaining < state.totalTime;
-            if (state.isRunning || hasProgress) {
-                const confirmed = await showConfirm(
-                    'RESET?',
-                    'Current progress will be lost.',
-                    'RESET'
-                );
-                if (!confirmed) return;
-            }
-
-            const wasRunning = state.isRunning;
-            pauseTimer();
-
-            // If was a work session and had some progress, record partial session
-            if (wasRunning && state.isWorkSession && state.sessionStartTime) {
-                const elapsed = Math.floor((state.totalTime - state.timeRemaining) / 60);
-                if (elapsed >= 1) {
-                    addSession({
-                        startTime: formatTime(new Date(state.sessionStartTime)),
-                        endTime: formatTime(new Date()),
-                        duration: elapsed,
+                    Storage.addSession({
+                        startTime: Utils.formatTime(new Date(savedState.sessionStartTime)),
+                        endTime: Utils.formatTime(new Date(savedState.sessionStartTime + savedState.totalTime * 1000)),
+                        duration: duration,
                         type: 'work',
-                        completed: false
+                        completed: true
                     });
+
+                    this.state.completedPomodoros = savedState.completedPomodoros + 1;
+                }
+
+                this.state.mode = savedState.mode;
+                this.state.isWorkSession = !savedState.isWorkSession;
+                this.state.timeRemaining = this.state.isWorkSession
+                    ? this.modes[this.state.mode].work
+                    : this.modes[this.state.mode].break;
+                this.state.totalTime = this.state.timeRemaining;
+
+                UI.updateDisplay();
+                UI.updateProgress();
+                UI.updateSessionLabel();
+                UI.updateModeButtons();
+                Storage.clearState();
+            },
+
+            restoreState(savedState) {
+                this.state.mode = savedState.mode;
+                this.state.isWorkSession = savedState.isWorkSession;
+                this.state.timeRemaining = savedState.timeRemaining;
+                this.state.totalTime = savedState.totalTime;
+                this.state.completedPomodoros = savedState.completedPomodoros;
+
+                UI.updateDisplay();
+                UI.updateProgress();
+                UI.updateSessionLabel();
+                UI.updateModeButtons();
+            }
+        };
+
+        // ==================== GOALS MODULE ====================
+        const Goals = {
+            config: { daily: 120 },
+
+            init() {
+                this.config = Storage.loadGoals();
+                UI.elements.goalInput.value = this.config.daily;
+                this.updateProgress();
+            },
+
+            setDaily(minutes) {
+                this.config.daily = minutes;
+                Storage.saveGoals(this.config);
+                this.updateProgress();
+            },
+
+            getTodayMinutes() {
+                const sessions = Storage.loadSessions();
+                const todayKey = Storage.getDateKey();
+                const todaySessions = sessions[todayKey] || [];
+
+                let total = todaySessions
+                    .filter(s => s.type === 'work')
+                    .reduce((sum, s) => sum + s.duration, 0);
+
+                // Add current running session
+                if (Timer.state.isRunning && Timer.state.isWorkSession && Timer.state.sessionStartTime) {
+                    total += Math.floor((Timer.state.totalTime - Timer.state.timeRemaining) / 60);
+                }
+
+                return total;
+            },
+
+            updateProgress() {
+                const current = this.getTodayMinutes();
+                const target = this.config.daily;
+                const progress = Math.min(100, (current / target) * 100);
+                const remaining = Math.max(0, target - current);
+
+                UI.elements.goalProgressFill.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    UI.elements.goalProgressFill.classList.add('completed');
+                    UI.elements.goalText.textContent = 'GOAL ACHIEVED!';
+                    UI.elements.goalText.classList.add('completed');
+                } else {
+                    UI.elements.goalProgressFill.classList.remove('completed');
+                    const hours = Math.floor(remaining / 60);
+                    const mins = remaining % 60;
+                    UI.elements.goalText.textContent = hours > 0 ? `${hours}H ${mins}M LEFT` : `${mins}M LEFT`;
+                    UI.elements.goalText.classList.remove('completed');
                 }
             }
+        };
 
-            state.isWorkSession = true;
-            state.timeRemaining = modes[state.mode].work;
-            state.totalTime = modes[state.mode].work;
-            state.sessionStartTime = null;
-            timerDisplay.classList.remove('paused');
+        // ==================== STATS MODULE ====================
+        const Stats = {
+            currentPeriod: 'today',
 
-            updateDisplay();
-            updateProgress();
-            updateSessionLabel();
-            clearState();
-        }
+            init() {
+                this.update();
+                this.bindEvents();
+            },
 
-        async function skipSession() {
-            const sessionType = state.isWorkSession ? 'WORK' : 'BREAK';
-            const confirmed = await showConfirm(
-                `SKIP ${sessionType}?`,
-                'Move to next session.',
-                'SKIP'
-            );
-            if (!confirmed) return;
-            completeSession();
-        }
+            bindEvents() {
+                UI.elements.statsTabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        UI.elements.statsTabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        this.currentPeriod = tab.dataset.period;
+                        this.update();
+                    });
+                });
+            },
 
-        function completeSession() {
-            pauseTimer();
-            playSound();
-            showNotification();
+            calculateStreak() {
+                const sessions = Storage.loadSessions();
+                const dates = Object.keys(sessions).sort().reverse();
+                let streak = 0;
 
-            // Record completed session
-            if (state.isWorkSession && state.sessionStartTime) {
-                addSession({
-                    startTime: formatTime(new Date(state.sessionStartTime)),
-                    endTime: formatTime(new Date()),
-                    duration: Math.floor(state.totalTime / 60),
-                    type: 'work',
-                    completed: true
+                const today = Storage.getDateKey();
+                let checkDate = new Date();
+
+                while (true) {
+                    const key = Storage.getDateKey(checkDate);
+                    const daySessions = sessions[key];
+
+                    if (daySessions && daySessions.some(s => s.type === 'work')) {
+                        streak++;
+                        checkDate.setDate(checkDate.getDate() - 1);
+                    } else if (key !== today) {
+                        break;
+                    } else {
+                        checkDate.setDate(checkDate.getDate() - 1);
+                    }
+                }
+
+                return streak;
+            },
+
+            findPeakHour(sessions) {
+                const hourCounts = new Array(24).fill(0);
+
+                Object.values(sessions).flat().forEach(s => {
+                    if (s.type === 'work' && s.startTime) {
+                        const hour = parseInt(s.startTime.split(':')[0]);
+                        hourCounts[hour] += s.duration;
+                    }
                 });
 
-                state.completedPomodoros++;
-                updatePomodoroCounter();
-            }
+                const maxMinutes = Math.max(...hourCounts);
+                if (maxMinutes === 0) return '--';
 
-            // Switch to next session
-            if (state.isWorkSession) {
-                state.timeRemaining = modes[state.mode].break;
-                state.totalTime = modes[state.mode].break;
-            } else {
-                state.timeRemaining = modes[state.mode].work;
-                state.totalTime = modes[state.mode].work;
-            }
+                const peakHour = hourCounts.indexOf(maxMinutes);
+                return `${peakHour.toString().padStart(2, '0')}:00`;
+            },
 
-            state.isWorkSession = !state.isWorkSession;
-            state.sessionStartTime = null;
+            getStats(period) {
+                const sessions = Storage.loadSessions();
+                const now = new Date();
+                let filteredSessions = {};
 
-            updateDisplay();
-            updateProgress();
-            updateSessionLabel();
-            clearState();
-        }
-
-        async function setMode(mode) {
-            if (state.isRunning || state.timeRemaining < state.totalTime) {
-                const confirmed = await showConfirm(
-                    'CHANGE MODE?',
-                    'Timer will be reset.',
-                    'CHANGE'
-                );
-                if (!confirmed) return;
-            }
-
-            state.mode = mode;
-            updateModeButtons();
-
-            // 직접 리셋 (confirm 없이)
-            pauseTimer();
-            state.isWorkSession = true;
-            state.timeRemaining = modes[state.mode].work;
-            state.totalTime = modes[state.mode].work;
-            state.sessionStartTime = null;
-            timerDisplay.classList.remove('paused');
-            updateDisplay();
-            updateProgress();
-            updateSessionLabel();
-            clearState();
-        }
-
-        function updateModeButtons() {
-            document.getElementById('mode25').classList.toggle('active', state.mode === '25/5');
-            document.getElementById('mode50').classList.toggle('active', state.mode === '50/10');
-        }
-
-        // ==================== DISPLAY FUNCTIONS ====================
-        function updateDisplay() {
-            const minutes = Math.floor(state.timeRemaining / 60);
-            const seconds = state.timeRemaining % 60;
-            timerDisplay.textContent =
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function updateProgress() {
-            const progress = (state.timeRemaining / state.totalTime) * 100;
-            progressBar.style.width = `${progress}%`;
-        }
-
-        function updateSessionLabel() {
-            if (state.isWorkSession) {
-                sessionLabel.textContent = 'WORK';
-                sessionLabel.classList.remove('break');
-            } else {
-                sessionLabel.textContent = 'BREAK';
-                sessionLabel.classList.add('break');
-            }
-        }
-
-        function updateDocumentTitle() {
-            const minutes = Math.floor(state.timeRemaining / 60);
-            const seconds = state.timeRemaining % 60;
-            const time = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            const session = state.isWorkSession ? 'WORK' : 'BREAK';
-            document.title = `${time} - ${session}`;
-        }
-
-        function updatePomodoroCounter() {
-            // 카운터 UI 제거됨 - 함수만 유지
-        }
-
-        // ==================== HEATMAP FUNCTIONS (GitHub Style) ====================
-        function initHeatmap() {
-            // Y축: 시간 라벨 생성 (00-23)
-            heatmapHours.innerHTML = '';
-            for (let i = 0; i < 24; i++) {
-                const label = document.createElement('div');
-                label.className = 'hour-label';
-                // 6시간 단위로만 표시
-                if (i % 6 === 0) {
-                    label.textContent = i.toString().padStart(2, '0');
-                    label.classList.add('visible');
+                if (period === 'today') {
+                    const todayKey = Storage.getDateKey();
+                    if (sessions[todayKey]) {
+                        filteredSessions[todayKey] = sessions[todayKey];
+                    }
+                } else if (period === 'week') {
+                    for (let i = 0; i < 7; i++) {
+                        const d = new Date(now);
+                        d.setDate(d.getDate() - i);
+                        const key = Storage.getDateKey(d);
+                        if (sessions[key]) {
+                            filteredSessions[key] = sessions[key];
+                        }
+                    }
+                } else {
+                    filteredSessions = sessions;
                 }
-                heatmapHours.appendChild(label);
+
+                const allSessions = Object.values(filteredSessions).flat().filter(s => s.type === 'work');
+                const totalMinutes = allSessions.reduce((sum, s) => sum + s.duration, 0);
+                const sessionCount = allSessions.length;
+
+                // Add current session for today
+                if (period === 'today' || period === 'week' || period === 'all') {
+                    if (Timer.state.isRunning && Timer.state.isWorkSession && Timer.state.sessionStartTime) {
+                        const currentMinutes = Math.floor((Timer.state.totalTime - Timer.state.timeRemaining) / 60);
+                        // Already added in getTodayMinutes for goals, add here for display
+                    }
+                }
+
+                return {
+                    totalMinutes,
+                    sessionCount,
+                    streak: this.calculateStreak(),
+                    peakHour: this.findPeakHour(filteredSessions)
+                };
+            },
+
+            update() {
+                const stats = this.getStats(this.currentPeriod);
+
+                UI.elements.statStreak.textContent = stats.streak;
+
+                const hours = Math.floor(stats.totalMinutes / 60);
+                const mins = stats.totalMinutes % 60;
+                UI.elements.statTime.textContent = hours > 0 ? `${hours}H${mins > 0 ? mins + 'M' : ''}` : `${mins}M`;
+
+                UI.elements.statPeak.textContent = stats.peakHour;
+                UI.elements.statSessions.textContent = stats.sessionCount;
             }
+        };
 
-            renderHeatmap();
-        }
+        // ==================== HEATMAP MODULE ====================
+        const Heatmap = {
+            init() {
+                // Y축: 시간 라벨 생성 (00-23)
+                UI.elements.heatmapHours.innerHTML = '';
+                for (let i = 0; i < 24; i++) {
+                    const label = document.createElement('div');
+                    label.className = 'hour-label';
+                    if (i % 6 === 0) {
+                        label.textContent = i.toString().padStart(2, '0');
+                        label.classList.add('visible');
+                    }
+                    UI.elements.heatmapHours.appendChild(label);
+                }
 
-        function renderHeatmap() {
-            const sessions = loadSessions();
-            const dates = Object.keys(sessions).sort(); // 날짜순 정렬
+                this.render();
+            },
 
-            // 기록이 없으면 빈 상태 표시
-            if (dates.length === 0) {
-                heatmapDates.innerHTML = '';
-                heatmapGrid.innerHTML = '<div class="heatmap-empty">NO DATA YET</div>';
-                totalTimeEl.textContent = '0H 0M';
-                totalSessionsEl.textContent = '0 SESSIONS';
-                return;
-            }
+            render() {
+                const sessions = Storage.loadSessions();
+                const dates = Object.keys(sessions).sort();
 
-            // 전체 통계 계산
-            let totalMinutes = 0;
-            let totalSessions = 0;
+                if (dates.length === 0) {
+                    UI.elements.heatmapDates.innerHTML = '';
+                    UI.elements.heatmapGrid.innerHTML = '<div class="heatmap-empty">NO DATA YET</div>';
+                    UI.elements.totalTimeEl.textContent = '0H 0M';
+                    UI.elements.totalSessionsEl.textContent = '0 SESSIONS';
+                    return;
+                }
 
-            // 현재 진행 중인 세션 정보
-            const todayKey = getDateKey(new Date());
-            let currentSessionMinutes = 0;
-            let currentSessionHour = -1;
-            let currentSessionStartMinute = 0;
+                let totalMinutes = 0;
+                let totalSessions = 0;
 
-            if (state.isRunning && state.isWorkSession && state.sessionStartTime) {
-                const elapsed = Math.floor((state.totalTime - state.timeRemaining) / 60);
-                currentSessionMinutes = elapsed;
-                const startDate = new Date(state.sessionStartTime);
-                currentSessionHour = startDate.getHours();
-                currentSessionStartMinute = startDate.getMinutes();
-            }
+                const todayKey = Storage.getDateKey();
+                let currentSessionMinutes = 0;
+                let currentSessionHour = -1;
+                let currentSessionStartMinute = 0;
 
-            // 오늘 데이터가 없으면 추가
-            if (currentSessionMinutes > 0 && !dates.includes(todayKey)) {
-                dates.push(todayKey);
-                dates.sort();
-            }
+                if (Timer.state.isRunning && Timer.state.isWorkSession && Timer.state.sessionStartTime) {
+                    const elapsed = Math.floor((Timer.state.totalTime - Timer.state.timeRemaining) / 60);
+                    currentSessionMinutes = elapsed;
+                    const startDate = new Date(Timer.state.sessionStartTime);
+                    currentSessionHour = startDate.getHours();
+                    currentSessionStartMinute = startDate.getMinutes();
+                }
 
-            // 각 날짜별 시간대 데이터 계산
-            const daysData = dates.map(dateKey => {
-                const daySessions = sessions[dateKey] || [];
-                const hoursData = new Array(24).fill(0);
+                if (currentSessionMinutes > 0 && !dates.includes(todayKey)) {
+                    dates.push(todayKey);
+                    dates.sort();
+                }
 
-                daySessions.forEach(session => {
-                    if (session.type === 'work') {
-                        const [hours, minutes] = session.startTime.split(':').map(Number);
-                        const duration = session.duration;
+                const daysData = dates.map(dateKey => {
+                    const daySessions = sessions[dateKey] || [];
+                    const hoursData = new Array(24).fill(0);
 
-                        let remaining = duration;
-                        let currentHour = hours;
-                        let currentMinute = minutes;
+                    daySessions.forEach(session => {
+                        if (session.type === 'work') {
+                            const [hours, minutes] = session.startTime.split(':').map(Number);
+                            const duration = session.duration;
 
-                        while (remaining > 0 && currentHour < 24) {
-                            const minutesInThisHour = Math.min(remaining, 60 - currentMinute);
-                            hoursData[currentHour] += minutesInThisHour;
+                            let remaining = duration;
+                            let currentHour = hours;
+                            let currentMinute = minutes;
+
+                            while (remaining > 0 && currentHour < 24) {
+                                const minutesInThisHour = Math.min(remaining, 60 - currentMinute);
+                                hoursData[currentHour] += minutesInThisHour;
+                                remaining -= minutesInThisHour;
+                                currentHour++;
+                                currentMinute = 0;
+                            }
+
+                            totalMinutes += duration;
+                            totalSessions++;
+                        }
+                    });
+
+                    if (dateKey === todayKey && currentSessionMinutes > 0) {
+                        let remaining = currentSessionMinutes;
+                        let hour = currentSessionHour;
+                        let minute = currentSessionStartMinute;
+
+                        while (remaining > 0 && hour < 24) {
+                            const minutesInThisHour = Math.min(remaining, 60 - minute);
+                            hoursData[hour] += minutesInThisHour;
                             remaining -= minutesInThisHour;
-                            currentHour++;
-                            currentMinute = 0;
+                            hour++;
+                            minute = 0;
                         }
 
-                        totalMinutes += duration;
-                        totalSessions++;
+                        totalMinutes += currentSessionMinutes;
                     }
+
+                    return { dateKey, hoursData };
                 });
 
-                // 현재 진행 중인 세션 추가 (오늘만)
-                if (dateKey === todayKey && currentSessionMinutes > 0) {
-                    let remaining = currentSessionMinutes;
-                    let hour = currentSessionHour;
-                    let minute = currentSessionStartMinute;
+                UI.elements.heatmapDates.innerHTML = '';
+                daysData.forEach(({ dateKey }) => {
+                    const label = document.createElement('div');
+                    label.className = 'date-label';
+                    const [, , day] = dateKey.split('-');
+                    label.textContent = day;
+                    UI.elements.heatmapDates.appendChild(label);
+                });
 
-                    while (remaining > 0 && hour < 24) {
-                        const minutesInThisHour = Math.min(remaining, 60 - minute);
-                        hoursData[hour] += minutesInThisHour;
-                        remaining -= minutesInThisHour;
-                        hour++;
-                        minute = 0;
+                UI.elements.heatmapGrid.innerHTML = '';
+                daysData.forEach(({ dateKey, hoursData }) => {
+                    const dayColumn = document.createElement('div');
+                    dayColumn.className = 'heatmap-day';
+
+                    for (let hour = 0; hour < 24; hour++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'heatmap-cell';
+
+                        const minutes = hoursData[hour];
+                        if (minutes > 0) {
+                            const level = Math.min(5, Math.ceil(minutes / 12));
+                            cell.classList.add(`filled-${level}`);
+                        }
+
+                        if (dateKey === todayKey) {
+                            cell.classList.add('today');
+                        }
+
+                        cell.dataset.date = dateKey;
+                        cell.dataset.hour = hour;
+                        cell.dataset.minutes = minutes;
+
+                        cell.addEventListener('mouseenter', this.showTooltip);
+                        cell.addEventListener('mouseleave', this.hideTooltip);
+                        cell.addEventListener('mousemove', this.moveTooltip);
+
+                        dayColumn.appendChild(cell);
                     }
 
-                    totalMinutes += currentSessionMinutes;
+                    UI.elements.heatmapGrid.appendChild(dayColumn);
+                });
+
+                const hours = Math.floor(totalMinutes / 60);
+                const mins = totalMinutes % 60;
+                UI.elements.totalTimeEl.textContent = `${hours}H ${mins}M`;
+                UI.elements.totalSessionsEl.textContent = `${totalSessions} SESSIONS`;
+            },
+
+            update() {
+                this.render();
+            },
+
+            showTooltip(e) {
+                const cell = e.target;
+                const date = cell.dataset.date;
+                const hour = cell.dataset.hour;
+                const minutes = cell.dataset.minutes;
+
+                const [year, month, day] = date.split('-');
+                const hourNum = parseInt(hour);
+                const minNum = parseInt(minutes);
+
+                UI.elements.heatmapTooltip.innerHTML = `
+                    ${month}/${day} ${hourNum.toString().padStart(2, '0')}:00<br>
+                    ${minNum > 0 ? minNum + 'M STUDIED' : 'NO DATA'}
+                `;
+                UI.elements.heatmapTooltip.classList.add('show');
+            },
+
+            hideTooltip() {
+                UI.elements.heatmapTooltip.classList.remove('show');
+            },
+
+            moveTooltip(e) {
+                UI.elements.heatmapTooltip.style.left = (e.clientX + 12) + 'px';
+                UI.elements.heatmapTooltip.style.top = (e.clientY + 12) + 'px';
+            }
+        };
+
+        // ==================== MODALS MODULE ====================
+        const Modals = {
+            pendingImportData: null,
+
+            init() {
+                // Goal Modal
+                UI.elements.goalEditBtn.addEventListener('click', () => this.showGoalModal());
+                UI.elements.goalSave.addEventListener('click', () => this.saveGoal());
+                UI.elements.goalCancel.addEventListener('click', () => this.hideGoalModal());
+
+                // Custom Timer Modal
+                UI.elements.customSave.addEventListener('click', () => this.saveCustomMode());
+                UI.elements.customCancel.addEventListener('click', () => this.hideCustomModal());
+
+                // Import Modal
+                UI.elements.importMerge.addEventListener('click', () => this.doImport('merge'));
+                UI.elements.importReplace.addEventListener('click', () => this.doImport('replace'));
+                UI.elements.importCancel.addEventListener('click', () => this.hideImportModal());
+            },
+
+            showGoalModal() {
+                UI.elements.goalInput.value = Goals.config.daily;
+                UI.elements.goalModal.classList.add('show');
+                UI.elements.goalInput.focus();
+            },
+
+            hideGoalModal() {
+                UI.elements.goalModal.classList.remove('show');
+            },
+
+            saveGoal() {
+                const value = parseInt(UI.elements.goalInput.value);
+                if (value >= 1 && value <= 480) {
+                    Goals.setDaily(value);
+                    this.hideGoalModal();
                 }
+            },
 
-                return { dateKey, hoursData };
-            });
+            showCustomModal() {
+                const config = Storage.loadCustomMode();
+                UI.elements.customWorkInput.value = config.work;
+                UI.elements.customBreakInput.value = config.break;
+                UI.elements.customModal.classList.add('show');
+                UI.elements.customWorkInput.focus();
+            },
 
-            // X축: 날짜 라벨 생성
-            heatmapDates.innerHTML = '';
+            hideCustomModal() {
+                UI.elements.customModal.classList.remove('show');
+            },
 
-            daysData.forEach(({ dateKey }) => {
-                const label = document.createElement('div');
-                label.className = 'date-label';
-                const [, , day] = dateKey.split('-');
-                label.textContent = day;
-                heatmapDates.appendChild(label);
-            });
+            async saveCustomMode() {
+                const work = parseInt(UI.elements.customWorkInput.value);
+                const breakTime = parseInt(UI.elements.customBreakInput.value);
 
-            // 그리드 생성
-            heatmapGrid.innerHTML = '';
+                if (work >= 1 && work <= 120 && breakTime >= 1 && breakTime <= 60) {
+                    Storage.saveCustomMode({ work, break: breakTime });
+                    Timer.modes.custom = { work: work * 60, break: breakTime * 60 };
 
-            daysData.forEach(({ dateKey, hoursData }) => {
-                const dayColumn = document.createElement('div');
-                dayColumn.className = 'heatmap-day';
+                    this.hideCustomModal();
 
-                for (let hour = 0; hour < 24; hour++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'heatmap-cell';
-
-                    // 채움 레벨 계산 (0-5)
-                    const minutes = hoursData[hour];
-                    if (minutes > 0) {
-                        const level = Math.min(5, Math.ceil(minutes / 12)); // 12분 단위
-                        cell.classList.add(`filled-${level}`);
-                    }
-
-                    // 오늘 표시
-                    if (dateKey === todayKey) {
-                        cell.classList.add('today');
-                    }
-
-                    // 툴팁 이벤트
-                    cell.dataset.date = dateKey;
-                    cell.dataset.hour = hour;
-                    cell.dataset.minutes = minutes;
-
-                    cell.addEventListener('mouseenter', showTooltip);
-                    cell.addEventListener('mouseleave', hideTooltip);
-                    cell.addEventListener('mousemove', moveTooltip);
-
-                    dayColumn.appendChild(cell);
-                }
-
-                heatmapGrid.appendChild(dayColumn);
-            });
-
-            // 통계 업데이트
-            const hours = Math.floor(totalMinutes / 60);
-            const mins = totalMinutes % 60;
-            totalTimeEl.textContent = `${hours}H ${mins}M`;
-            totalSessionsEl.textContent = `${totalSessions} SESSIONS`;
-        }
-
-        function updateHeatmap() {
-            renderHeatmap();
-        }
-
-        // Tooltip functions
-        function showTooltip(e) {
-            const cell = e.target;
-            const date = cell.dataset.date;
-            const hour = cell.dataset.hour;
-            const minutes = cell.dataset.minutes;
-
-            const [year, month, day] = date.split('-');
-            const hourNum = parseInt(hour);
-            const minNum = parseInt(minutes);
-
-            heatmapTooltip.innerHTML = `
-                ${month}/${day} ${hourNum.toString().padStart(2, '0')}:00<br>
-                ${minNum > 0 ? minNum + 'M STUDIED' : 'NO DATA'}
-            `;
-            heatmapTooltip.classList.add('show');
-        }
-
-        function hideTooltip() {
-            heatmapTooltip.classList.remove('show');
-        }
-
-        function moveTooltip(e) {
-            heatmapTooltip.style.left = (e.clientX + 12) + 'px';
-            heatmapTooltip.style.top = (e.clientY + 12) + 'px';
-        }
-
-        // ==================== UTILITY FUNCTIONS ====================
-        function formatTime(date) {
-            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-        }
-
-        function formatDate(date) {
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            return `${month}/${day}`;
-        }
-
-        // ==================== THEME FUNCTIONS ====================
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            themeIcon.textContent = isDark ? 'LIGHT' : 'DARK';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
-
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark');
-                themeIcon.textContent = 'LIGHT';
-            }
-        }
-
-        // ==================== NOTIFICATION FUNCTIONS ====================
-        function requestNotificationPermission() {
-            if ('Notification' in window) {
-                Notification.requestPermission().then(updateNotificationButton);
-            }
-        }
-
-        function updateNotificationButton() {
-            if ('Notification' in window) {
-                if (Notification.permission === 'granted') {
-                    notificationBtn.classList.add('granted');
-                    notificationBtn.textContent = 'NOTIFY ON';
-                } else if (Notification.permission === 'denied') {
-                    notificationBtn.textContent = 'NOTIFY OFF';
-                }
-            }
-        }
-
-        function showNotification() {
-            if ('Notification' in window && Notification.permission === 'granted') {
-                const title = state.isWorkSession ? 'Work Complete!' : 'Break Over!';
-                const body = state.isWorkSession ? 'Time for a break!' : 'Ready to focus!';
-                new Notification(title, { body });
-            }
-        }
-
-        // ==================== SOUND FUNCTION ====================
-        function playSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-            [0, 200, 400].forEach(delay => {
-                setTimeout(() => {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-
-                    oscillator.frequency.value = 800;
-                    oscillator.type = 'square';
-
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.1);
-                }, delay);
-            });
-        }
-
-        // ==================== KEYBOARD SHORTCUTS ====================
-        document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-            if (e.code === 'Space') {
-                e.preventDefault();
-                toggleTimer();
-            } else if (e.code === 'KeyR') {
-                e.preventDefault();
-                resetTimer();
-            }
-        });
-
-        // ==================== VISIBILITY CHANGE ====================
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && state.isRunning) {
-                saveState();
-            } else if (!document.hidden && state.isRunning) {
-                // Sync timer when tab becomes visible
-                const savedState = loadState();
-                if (savedState) {
-                    const elapsed = Math.floor((Date.now() - savedState.lastTick) / 1000);
-                    const newTime = savedState.timeRemaining - elapsed;
-
-                    if (newTime > 0) {
-                        state.timeRemaining = newTime;
-                        updateDisplay();
-                        updateProgress();
+                    if (Timer.state.isRunning || Timer.state.timeRemaining < Timer.state.totalTime) {
+                        const confirmed = await UI.showConfirm(
+                            'APPLY CUSTOM?',
+                            'Timer will be reset.',
+                            'APPLY'
+                        );
+                        if (confirmed) {
+                            Timer.applyMode('custom');
+                        }
                     } else {
-                        completeSession();
+                        Timer.applyMode('custom');
                     }
                 }
-            }
-        });
+            },
 
-        // ==================== BEFORE UNLOAD ====================
-        window.addEventListener('beforeunload', () => {
-            if (state.isRunning || state.timeRemaining < state.totalTime) {
-                saveState();
+            showImportModal(data) {
+                this.pendingImportData = data;
+                UI.elements.importModal.classList.add('show');
+            },
+
+            hideImportModal() {
+                UI.elements.importModal.classList.remove('show');
+                this.pendingImportData = null;
+            },
+
+            doImport(mode) {
+                if (!this.pendingImportData) return;
+
+                const data = this.pendingImportData;
+
+                if (mode === 'merge') {
+                    const existing = Storage.loadSessions();
+                    Object.keys(data.sessions).forEach(date => {
+                        if (existing[date]) {
+                            existing[date] = [...existing[date], ...data.sessions[date]];
+                        } else {
+                            existing[date] = data.sessions[date];
+                        }
+                    });
+                    Storage.saveSessions(existing);
+                } else {
+                    Storage.saveSessions(data.sessions);
+                }
+
+                // Restore settings if available
+                if (data.settings) {
+                    if (data.settings.customMode) {
+                        Storage.saveCustomMode(data.settings.customMode);
+                        Timer.modes.custom = {
+                            work: data.settings.customMode.work * 60,
+                            break: data.settings.customMode.break * 60
+                        };
+                    }
+                    if (data.settings.goals) {
+                        Storage.saveGoals(data.settings.goals);
+                        Goals.config = data.settings.goals;
+                        Goals.updateProgress();
+                    }
+                }
+
+                Heatmap.update();
+                Stats.update();
+                this.hideImportModal();
             }
-        });
+        };
+
+        // ==================== DATA MANAGER MODULE ====================
+        const DataManager = {
+            init() {
+                UI.elements.exportBtn.addEventListener('click', () => this.exportData());
+                UI.elements.importInput.addEventListener('change', (e) => this.handleImport(e));
+            },
+
+            exportData() {
+                const data = {
+                    version: '1.0',
+                    exportedAt: new Date().toISOString(),
+                    sessions: Storage.loadSessions(),
+                    settings: {
+                        theme: Storage.loadTheme(),
+                        customMode: Storage.loadCustomMode(),
+                        goals: Storage.loadGoals()
+                    }
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `pomodoro-backup-${Storage.getDateKey()}.json`;
+                a.click();
+
+                URL.revokeObjectURL(url);
+            },
+
+            async handleImport(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    const data = JSON.parse(text);
+
+                    if (!data.version || !data.sessions) {
+                        throw new Error('Invalid backup file format');
+                    }
+
+                    Modals.showImportModal(data);
+                } catch (error) {
+                    console.error('Import failed:', error);
+                    await UI.showConfirm('ERROR', 'Failed to import data.', 'OK');
+                }
+
+                // Reset input
+                e.target.value = '';
+            }
+        };
+
+        // ==================== THEME MODULE ====================
+        const Theme = {
+            init() {
+                const savedTheme = Storage.loadTheme();
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark');
+                    UI.elements.themeIcon.textContent = 'LIGHT';
+                }
+
+                UI.elements.themeToggle.addEventListener('click', () => this.toggle());
+            },
+
+            toggle() {
+                document.body.classList.toggle('dark');
+                const isDark = document.body.classList.contains('dark');
+                UI.elements.themeIcon.textContent = isDark ? 'LIGHT' : 'DARK';
+                Storage.saveTheme(isDark ? 'dark' : 'light');
+            }
+        };
+
+        // ==================== NOTIFICATION MODULE ====================
+        const Notification = {
+            init() {
+                this.updateButton();
+                UI.elements.notificationBtn.addEventListener('click', () => this.requestPermission());
+            },
+
+            requestPermission() {
+                if ('Notification' in window) {
+                    window.Notification.requestPermission().then(() => this.updateButton());
+                }
+            },
+
+            updateButton() {
+                if ('Notification' in window) {
+                    if (window.Notification.permission === 'granted') {
+                        UI.elements.notificationBtn.classList.add('granted');
+                        UI.elements.notificationBtn.textContent = 'NOTIFY ON';
+                    } else if (window.Notification.permission === 'denied') {
+                        UI.elements.notificationBtn.textContent = 'NOTIFY OFF';
+                    }
+                }
+            },
+
+            show() {
+                if ('Notification' in window && window.Notification.permission === 'granted') {
+                    const title = Timer.state.isWorkSession ? 'Work Complete!' : 'Break Over!';
+                    const body = Timer.state.isWorkSession ? 'Time for a break!' : 'Ready to focus!';
+                    new window.Notification(title, { body });
+                }
+            }
+        };
+
+        // ==================== SOUND MODULE ====================
+        const Sound = {
+            play() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                    [0, 200, 400].forEach(delay => {
+                        setTimeout(() => {
+                            const oscillator = audioContext.createOscillator();
+                            const gainNode = audioContext.createGain();
+
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioContext.destination);
+
+                            oscillator.frequency.value = 800;
+                            oscillator.type = 'square';
+
+                            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                            oscillator.start(audioContext.currentTime);
+                            oscillator.stop(audioContext.currentTime + 0.1);
+                        }, delay);
+                    });
+                } catch (error) {
+                    console.error('Failed to play sound:', error);
+                }
+            }
+        };
+
+        // ==================== UTILS MODULE ====================
+        const Utils = {
+            formatTime(date) {
+                return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            },
+
+            formatDate(date) {
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${month}/${day}`;
+            }
+        };
+
+        // ==================== EVENT LISTENERS ====================
+        function bindEvents() {
+            // Timer controls
+            UI.elements.startBtn.addEventListener('click', () => Timer.toggle());
+            UI.elements.resetBtn.addEventListener('click', () => Timer.reset());
+            UI.elements.skipBtn.addEventListener('click', () => Timer.skip());
+
+            // Mode buttons
+            UI.elements.mode25.addEventListener('click', () => Timer.setMode('25/5'));
+            UI.elements.mode50.addEventListener('click', () => Timer.setMode('50/10'));
+            UI.elements.modeCustom.addEventListener('click', () => Timer.setMode('custom'));
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    Timer.toggle();
+                } else if (e.code === 'KeyR') {
+                    e.preventDefault();
+                    Timer.reset();
+                }
+            });
+
+            // Visibility change
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && Timer.state.isRunning) {
+                    Storage.saveState();
+                } else if (!document.hidden && Timer.state.isRunning) {
+                    const savedState = Storage.loadState();
+                    if (savedState) {
+                        const elapsed = Math.floor((Date.now() - savedState.lastTick) / 1000);
+                        const newTime = savedState.timeRemaining - elapsed;
+
+                        if (newTime > 0) {
+                            Timer.state.timeRemaining = newTime;
+                            UI.updateDisplay();
+                            UI.updateProgress();
+                        } else {
+                            Timer.complete();
+                        }
+                    }
+                }
+            });
+
+            // Before unload
+            window.addEventListener('beforeunload', () => {
+                if (Timer.state.isRunning || Timer.state.timeRemaining < Timer.state.totalTime) {
+                    Storage.saveState();
+                }
+            });
+        }
 
         // ==================== INITIALIZE ====================
         function init() {
-            loadTheme();
-            updateNotificationButton();
-            initHeatmap();
+            UI.init();
+            Timer.init();
+            Theme.init();
+            Notification.init();
+            Modals.init();
+            DataManager.init();
+            Goals.init();
+            Stats.init();
+            Heatmap.init();
+            bindEvents();
 
             // Check for resume
-            if (!checkForResume()) {
-                updateDisplay();
-                updatePomodoroCounter();
+            if (!Timer.checkForResume()) {
+                UI.updateDisplay();
             }
         }
 
+        // Start the app
         init();
+    })();
     </script>
 </body>
 </html>
