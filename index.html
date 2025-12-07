@@ -16,7 +16,6 @@
             --bg: #ffffff;
             --primary: #000000;
             --pixel-size: 4px;
-            --success: #22c55e;
         }
 
         .dark {
@@ -115,7 +114,7 @@
         .timer-container {
             text-align: center;
             padding: 40px 60px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             background: var(--bg);
             transition: transform 0.3s;
         }
@@ -197,75 +196,21 @@
             );
         }
 
-        /* Daily Goal Section */
-        .goal-section {
-            width: 100%;
-            padding: 15px 20px;
-            background: var(--bg);
-            margin-bottom: 10px;
-        }
-
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .goal-title {
-            font-size: 0.5rem;
-            letter-spacing: 2px;
-        }
-
-        .goal-edit-btn {
-            background: var(--bg);
-            color: var(--primary);
-            border: none;
-            padding: 6px 10px;
-            font-family: inherit;
-            font-size: 0.4rem;
+        /* Daily Goal - Minimal */
+        .goal-line {
+            font-size: 0.45rem;
+            opacity: 0.6;
+            margin-bottom: 20px;
             cursor: pointer;
-            transition: all 0.1s;
+            transition: opacity 0.2s;
         }
 
-        .goal-edit-btn:hover {
-            background: var(--primary);
-            color: var(--bg);
-        }
-
-        .goal-progress-container {
-            width: 100%;
-            height: 12px;
-            background: var(--bg);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .goal-progress-fill {
-            height: 100%;
-            background: var(--primary);
-            transition: width 0.3s ease-out;
-        }
-
-        .goal-progress-fill.completed {
-            animation: goalComplete 1s ease-in-out infinite;
-        }
-
-        @keyframes goalComplete {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        .goal-text {
-            font-size: 0.4rem;
-            text-align: center;
-            opacity: 0.7;
-        }
-
-        .goal-text.completed {
+        .goal-line:hover {
             opacity: 1;
-            color: var(--primary);
+        }
+
+        .goal-line.completed {
+            opacity: 1;
         }
 
         /* Controls */
@@ -333,80 +278,6 @@
             color: var(--bg);
         }
 
-        /* Stats Section */
-        .stats-section {
-            width: 100%;
-            padding: 15px 20px;
-            background: var(--bg);
-        }
-
-        .stats-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .stats-title {
-            font-size: 0.5rem;
-            letter-spacing: 2px;
-        }
-
-        .stats-tabs {
-            display: flex;
-            gap: 8px;
-        }
-
-        .stats-tab {
-            background: var(--bg);
-            color: var(--primary);
-            border: none;
-            padding: 6px 10px;
-            font-family: inherit;
-            font-size: 0.35rem;
-            cursor: pointer;
-            transition: all 0.1s;
-            opacity: 0.5;
-        }
-
-        .stats-tab:hover {
-            opacity: 1;
-        }
-
-        .stats-tab.active {
-            background: var(--primary);
-            color: var(--bg);
-            opacity: 1;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 10px 5px;
-        }
-
-        .stat-value {
-            font-size: 0.7rem;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .stat-label {
-            font-size: 0.3rem;
-            opacity: 0.6;
-        }
-
-        @media (max-width: 400px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
         /* Heatmap Section - GitHub Style */
         .heatmap-section {
             display: flex;
@@ -422,6 +293,8 @@
             justify-content: space-between;
             width: 100%;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .heatmap-title {
@@ -430,8 +303,14 @@
         }
 
         .heatmap-stats-inline {
-            font-size: 0.5rem;
+            font-size: 0.4rem;
             opacity: 0.7;
+            display: flex;
+            gap: 12px;
+        }
+
+        .heatmap-stats-inline span {
+            white-space: nowrap;
         }
 
         /* GitHub-style Grid Container */
@@ -551,10 +430,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .total-time {
-            font-size: 0.6rem;
         }
 
         .total-sessions {
@@ -900,16 +775,9 @@
                 </div>
             </div>
 
-            <!-- Daily Goal -->
-            <div class="goal-section pixel-border-thin" id="goalSection">
-                <div class="goal-header">
-                    <span class="goal-title">DAILY GOAL</span>
-                    <button class="goal-edit-btn pixel-border-thin" id="goalEditBtn" aria-label="목표 수정">EDIT</button>
-                </div>
-                <div class="goal-progress-container pixel-border-thin">
-                    <div class="goal-progress-fill" id="goalProgressFill" style="width: 0%"></div>
-                </div>
-                <div class="goal-text" id="goalText">2H 0M LEFT</div>
+            <!-- Daily Goal - Minimal (one line) -->
+            <div class="goal-line" id="goalLine" aria-label="일일 목표 설정">
+                DAILY: 0M / 2H
             </div>
 
             <!-- Controls -->
@@ -926,41 +794,15 @@
             </div>
         </div>
 
-        <!-- Stats Section -->
-        <div class="stats-section pixel-border">
-            <div class="stats-header">
-                <span class="stats-title">STATS</span>
-                <div class="stats-tabs">
-                    <button class="stats-tab active" data-period="today">TODAY</button>
-                    <button class="stats-tab" data-period="week">WEEK</button>
-                    <button class="stats-tab" data-period="all">ALL</button>
-                </div>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-value" id="statStreak">0</span>
-                    <span class="stat-label">STREAK</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="statTime">0H</span>
-                    <span class="stat-label">TIME</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="statPeak">--</span>
-                    <span class="stat-label">PEAK</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="statSessions">0</span>
-                    <span class="stat-label">SESSIONS</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Heatmap Section -->
         <div class="heatmap-section pixel-border">
             <div class="heatmap-header">
                 <span class="heatmap-title">HISTORY</span>
-                <span class="heatmap-stats-inline" id="totalTime">0H 0M</span>
+                <div class="heatmap-stats-inline">
+                    <span id="statStreak">STREAK: 0</span>
+                    <span id="statTime">0H 0M</span>
+                    <span id="statPeak"></span>
+                </div>
             </div>
 
             <div class="heatmap-container" id="heatmapContainer">
@@ -1045,7 +887,6 @@
                 this.saveSessions(sessions);
                 Heatmap.update();
                 Goals.updateProgress();
-                Stats.update();
             },
 
             loadState() {
@@ -1158,8 +999,7 @@
                     heatmapDates: document.getElementById('heatmapDates'),
                     heatmapGrid: document.getElementById('heatmapGrid'),
                     heatmapTooltip: document.getElementById('heatmapTooltip'),
-                    totalTimeEl: document.getElementById('totalTime'),
-                    totalSessionsEl: document.getElementById('totalSessions'),
+                    totalSessions: document.getElementById('totalSessions'),
                     confirmModal: document.getElementById('confirmModal'),
                     confirmTitle: document.getElementById('confirmTitle'),
                     confirmMessage: document.getElementById('confirmMessage'),
@@ -1171,9 +1011,7 @@
                     goalInput: document.getElementById('goalInput'),
                     goalSave: document.getElementById('goalSave'),
                     goalCancel: document.getElementById('goalCancel'),
-                    goalEditBtn: document.getElementById('goalEditBtn'),
-                    goalProgressFill: document.getElementById('goalProgressFill'),
-                    goalText: document.getElementById('goalText'),
+                    goalLine: document.getElementById('goalLine'),
                     customModal: document.getElementById('customModal'),
                     customWorkInput: document.getElementById('customWorkInput'),
                     customBreakInput: document.getElementById('customBreakInput'),
@@ -1190,9 +1028,7 @@
                     importCancel: document.getElementById('importCancel'),
                     statStreak: document.getElementById('statStreak'),
                     statTime: document.getElementById('statTime'),
-                    statPeak: document.getElementById('statPeak'),
-                    statSessions: document.getElementById('statSessions'),
-                    statsTabs: document.querySelectorAll('.stats-tab')
+                    statPeak: document.getElementById('statPeak')
                 };
             },
 
@@ -1354,7 +1190,7 @@
                         Storage.saveState();
                     }
 
-                    // Update heatmap every minute (실시간 반영)
+                    // Update heatmap every minute
                     if (this.state.isWorkSession && (this.state.totalTime - this.state.timeRemaining) % 60 === 0) {
                         Heatmap.update();
                         Goals.updateProgress();
@@ -1391,7 +1227,6 @@
                 const wasRunning = this.state.isRunning;
                 this.pause();
 
-                // Record partial session if was running
                 if (wasRunning && this.state.isWorkSession && this.state.sessionStartTime) {
                     const elapsed = Math.floor((this.state.totalTime - this.state.timeRemaining) / 60);
                     if (elapsed >= 1) {
@@ -1434,7 +1269,6 @@
                 Notification.show();
                 UI.celebrate();
 
-                // Record completed session
                 if (this.state.isWorkSession && this.state.sessionStartTime) {
                     Storage.addSession({
                         startTime: Utils.formatTime(new Date(this.state.sessionStartTime)),
@@ -1447,7 +1281,6 @@
                     this.state.completedPomodoros++;
                 }
 
-                // Switch to next session
                 if (this.state.isWorkSession) {
                     this.state.timeRemaining = this.modes[this.state.mode].break;
                     this.state.totalTime = this.modes[this.state.mode].break;
@@ -1600,7 +1433,6 @@
                     .filter(s => s.type === 'work')
                     .reduce((sum, s) => sum + s.duration, 0);
 
-                // Add current running session
                 if (Timer.state.isRunning && Timer.state.isWorkSession && Timer.state.sessionStartTime) {
                     total += Math.floor((Timer.state.totalTime - Timer.state.timeRemaining) / 60);
                 }
@@ -1611,48 +1443,32 @@
             updateProgress() {
                 const current = this.getTodayMinutes();
                 const target = this.config.daily;
-                const progress = Math.min(100, (current / target) * 100);
-                const remaining = Math.max(0, target - current);
+                const isCompleted = current >= target;
 
-                UI.elements.goalProgressFill.style.width = `${progress}%`;
+                const currentH = Math.floor(current / 60);
+                const currentM = current % 60;
+                const targetH = Math.floor(target / 60);
+                const targetM = target % 60;
 
-                if (progress >= 100) {
-                    UI.elements.goalProgressFill.classList.add('completed');
-                    UI.elements.goalText.textContent = 'GOAL ACHIEVED!';
-                    UI.elements.goalText.classList.add('completed');
+                let text;
+                if (isCompleted) {
+                    text = `DAILY: ${currentH}H ${currentM}M ✓`;
+                    UI.elements.goalLine.classList.add('completed');
                 } else {
-                    UI.elements.goalProgressFill.classList.remove('completed');
-                    const hours = Math.floor(remaining / 60);
-                    const mins = remaining % 60;
-                    UI.elements.goalText.textContent = hours > 0 ? `${hours}H ${mins}M LEFT` : `${mins}M LEFT`;
-                    UI.elements.goalText.classList.remove('completed');
+                    const currentStr = currentH > 0 ? `${currentH}H ${currentM}M` : `${currentM}M`;
+                    const targetStr = targetH > 0 ? (targetM > 0 ? `${targetH}H ${targetM}M` : `${targetH}H`) : `${targetM}M`;
+                    text = `DAILY: ${currentStr} / ${targetStr}`;
+                    UI.elements.goalLine.classList.remove('completed');
                 }
+
+                UI.elements.goalLine.textContent = text;
             }
         };
 
-        // ==================== STATS MODULE ====================
+        // ==================== STATS MODULE (Simplified) ====================
         const Stats = {
-            currentPeriod: 'today',
-
-            init() {
-                this.update();
-                this.bindEvents();
-            },
-
-            bindEvents() {
-                UI.elements.statsTabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        UI.elements.statsTabs.forEach(t => t.classList.remove('active'));
-                        tab.classList.add('active');
-                        this.currentPeriod = tab.dataset.period;
-                        this.update();
-                    });
-                });
-            },
-
             calculateStreak() {
                 const sessions = Storage.loadSessions();
-                const dates = Object.keys(sessions).sort().reverse();
                 let streak = 0;
 
                 const today = Storage.getDateKey();
@@ -1675,7 +1491,8 @@
                 return streak;
             },
 
-            findPeakHour(sessions) {
+            findPeakHour() {
+                const sessions = Storage.loadSessions();
                 const hourCounts = new Array(24).fill(0);
 
                 Object.values(sessions).flat().forEach(s => {
@@ -1686,73 +1503,40 @@
                 });
 
                 const maxMinutes = Math.max(...hourCounts);
-                if (maxMinutes === 0) return '--';
+                if (maxMinutes === 0) return null;
 
                 const peakHour = hourCounts.indexOf(maxMinutes);
-                return `${peakHour.toString().padStart(2, '0')}:00`;
+                return peakHour;
             },
 
-            getStats(period) {
+            getTotalTime() {
                 const sessions = Storage.loadSessions();
-                const now = new Date();
-                let filteredSessions = {};
-
-                if (period === 'today') {
-                    const todayKey = Storage.getDateKey();
-                    if (sessions[todayKey]) {
-                        filteredSessions[todayKey] = sessions[todayKey];
-                    }
-                } else if (period === 'week') {
-                    for (let i = 0; i < 7; i++) {
-                        const d = new Date(now);
-                        d.setDate(d.getDate() - i);
-                        const key = Storage.getDateKey(d);
-                        if (sessions[key]) {
-                            filteredSessions[key] = sessions[key];
-                        }
-                    }
-                } else {
-                    filteredSessions = sessions;
-                }
-
-                const allSessions = Object.values(filteredSessions).flat().filter(s => s.type === 'work');
-                const totalMinutes = allSessions.reduce((sum, s) => sum + s.duration, 0);
-                const sessionCount = allSessions.length;
-
-                // Add current session for today
-                if (period === 'today' || period === 'week' || period === 'all') {
-                    if (Timer.state.isRunning && Timer.state.isWorkSession && Timer.state.sessionStartTime) {
-                        const currentMinutes = Math.floor((Timer.state.totalTime - Timer.state.timeRemaining) / 60);
-                        // Already added in getTodayMinutes for goals, add here for display
-                    }
-                }
-
-                return {
-                    totalMinutes,
-                    sessionCount,
-                    streak: this.calculateStreak(),
-                    peakHour: this.findPeakHour(filteredSessions)
-                };
+                const allSessions = Object.values(sessions).flat().filter(s => s.type === 'work');
+                return allSessions.reduce((sum, s) => sum + s.duration, 0);
             },
 
             update() {
-                const stats = this.getStats(this.currentPeriod);
+                const streak = this.calculateStreak();
+                const totalMinutes = this.getTotalTime();
+                const peakHour = this.findPeakHour();
 
-                UI.elements.statStreak.textContent = stats.streak;
+                UI.elements.statStreak.textContent = `STREAK: ${streak}`;
 
-                const hours = Math.floor(stats.totalMinutes / 60);
-                const mins = stats.totalMinutes % 60;
-                UI.elements.statTime.textContent = hours > 0 ? `${hours}H${mins > 0 ? mins + 'M' : ''}` : `${mins}M`;
+                const hours = Math.floor(totalMinutes / 60);
+                const mins = totalMinutes % 60;
+                UI.elements.statTime.textContent = `${hours}H ${mins}M`;
 
-                UI.elements.statPeak.textContent = stats.peakHour;
-                UI.elements.statSessions.textContent = stats.sessionCount;
+                if (peakHour !== null) {
+                    UI.elements.statPeak.textContent = `PEAK: ${peakHour.toString().padStart(2, '0')}:00`;
+                } else {
+                    UI.elements.statPeak.textContent = '';
+                }
             }
         };
 
         // ==================== HEATMAP MODULE ====================
         const Heatmap = {
             init() {
-                // Y축: 시간 라벨 생성 (00-23)
                 UI.elements.heatmapHours.innerHTML = '';
                 for (let i = 0; i < 24; i++) {
                     const label = document.createElement('div');
@@ -1774,8 +1558,8 @@
                 if (dates.length === 0) {
                     UI.elements.heatmapDates.innerHTML = '';
                     UI.elements.heatmapGrid.innerHTML = '<div class="heatmap-empty">NO DATA YET</div>';
-                    UI.elements.totalTimeEl.textContent = '0H 0M';
-                    UI.elements.totalSessionsEl.textContent = '0 SESSIONS';
+                    UI.elements.totalSessions.textContent = '0 SESSIONS';
+                    Stats.update();
                     return;
                 }
 
@@ -1887,10 +1671,8 @@
                     UI.elements.heatmapGrid.appendChild(dayColumn);
                 });
 
-                const hours = Math.floor(totalMinutes / 60);
-                const mins = totalMinutes % 60;
-                UI.elements.totalTimeEl.textContent = `${hours}H ${mins}M`;
-                UI.elements.totalSessionsEl.textContent = `${totalSessions} SESSIONS`;
+                UI.elements.totalSessions.textContent = `${totalSessions} SESSIONS`;
+                Stats.update();
             },
 
             update() {
@@ -1929,8 +1711,8 @@
             pendingImportData: null,
 
             init() {
-                // Goal Modal
-                UI.elements.goalEditBtn.addEventListener('click', () => this.showGoalModal());
+                // Goal Modal - click on goal line to open
+                UI.elements.goalLine.addEventListener('click', () => this.showGoalModal());
                 UI.elements.goalSave.addEventListener('click', () => this.saveGoal());
                 UI.elements.goalCancel.addEventListener('click', () => this.hideGoalModal());
 
@@ -2028,7 +1810,6 @@
                     Storage.saveSessions(data.sessions);
                 }
 
-                // Restore settings if available
                 if (data.settings) {
                     if (data.settings.customMode) {
                         Storage.saveCustomMode(data.settings.customMode);
@@ -2045,7 +1826,6 @@
                 }
 
                 Heatmap.update();
-                Stats.update();
                 this.hideImportModal();
             }
         };
@@ -2098,7 +1878,6 @@
                     await UI.showConfirm('ERROR', 'Failed to import data.', 'OK');
                 }
 
-                // Reset input
                 e.target.value = '';
             }
         };
@@ -2190,28 +1969,19 @@
         const Utils = {
             formatTime(date) {
                 return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-            },
-
-            formatDate(date) {
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                return `${month}/${day}`;
             }
         };
 
         // ==================== EVENT LISTENERS ====================
         function bindEvents() {
-            // Timer controls
             UI.elements.startBtn.addEventListener('click', () => Timer.toggle());
             UI.elements.resetBtn.addEventListener('click', () => Timer.reset());
             UI.elements.skipBtn.addEventListener('click', () => Timer.skip());
 
-            // Mode buttons
             UI.elements.mode25.addEventListener('click', () => Timer.setMode('25/5'));
             UI.elements.mode50.addEventListener('click', () => Timer.setMode('50/10'));
             UI.elements.modeCustom.addEventListener('click', () => Timer.setMode('custom'));
 
-            // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -2224,7 +1994,6 @@
                 }
             });
 
-            // Visibility change
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden && Timer.state.isRunning) {
                     Storage.saveState();
@@ -2245,7 +2014,6 @@
                 }
             });
 
-            // Before unload
             window.addEventListener('beforeunload', () => {
                 if (Timer.state.isRunning || Timer.state.timeRemaining < Timer.state.totalTime) {
                     Storage.saveState();
@@ -2262,17 +2030,14 @@
             Modals.init();
             DataManager.init();
             Goals.init();
-            Stats.init();
             Heatmap.init();
             bindEvents();
 
-            // Check for resume
             if (!Timer.checkForResume()) {
                 UI.updateDisplay();
             }
         }
 
-        // Start the app
         init();
     })();
     </script>
