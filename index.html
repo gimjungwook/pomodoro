@@ -389,6 +389,7 @@
             border: 1px solid var(--primary);
             opacity: 0.3;
             transition: all 0.2s;
+            cursor: pointer;
         }
 
         .heatmap-cell:hover {
@@ -457,32 +458,56 @@
         .legend-cell.l3 { opacity: 0.7; background: var(--primary); }
         .legend-cell.l4 { opacity: 1; background: var(--primary); }
 
-        /* Data Controls */
-        .data-controls {
-            margin-top: 15px;
+        /* Session List Modal */
+        .session-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .session-item {
             display: flex;
-            gap: 10px;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--primary);
+            opacity: 0.8;
         }
 
-        .data-btn {
-            background: var(--bg);
-            color: var(--primary);
-            border: none;
-            padding: 8px 16px;
-            font-family: inherit;
+        .session-item:last-child {
+            border-bottom: none;
+        }
+
+        .session-info {
             font-size: 0.45rem;
+            text-align: left;
+        }
+
+        .session-time {
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+
+        .session-delete {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-family: inherit;
+            font-size: 0.5rem;
             cursor: pointer;
-            transition: all 0.1s;
+            padding: 6px 10px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
         }
 
-        .data-btn:hover {
-            background: var(--primary);
-            color: var(--bg);
+        .session-delete:hover {
+            opacity: 1;
         }
 
-        .data-btn input[type="file"] {
-            display: none;
+        .session-empty {
+            font-size: 0.45rem;
+            opacity: 0.5;
+            padding: 20px;
         }
 
         /* Empty state */
@@ -563,6 +588,10 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
+        }
+
+        #confirmModal {
+            z-index: 1100;
         }
 
         .dark .modal {
@@ -727,15 +756,13 @@
         </div>
     </div>
 
-    <!-- Import Options Modal -->
-    <div class="modal" id="importModal" role="dialog" aria-modal="true">
+    <!-- Session List Modal -->
+    <div class="modal" id="sessionModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
-            <h2>IMPORT DATA</h2>
-            <p>How to handle existing data?</p>
+            <h2 id="sessionModalTitle">SESSIONS</h2>
+            <div class="session-list" id="sessionList"></div>
             <div class="modal-buttons">
-                <button class="modal-btn pixel-border-thin" id="importCancel">CANCEL</button>
-                <button class="modal-btn pixel-border-thin" id="importMerge">MERGE</button>
-                <button class="modal-btn primary pixel-border-thin" id="importReplace">REPLACE</button>
+                <button class="modal-btn pixel-border-thin" id="sessionClose">CLOSE</button>
             </div>
         </div>
     </div>
@@ -829,15 +856,6 @@
                     <span>MORE</span>
                 </div>
             </div>
-
-            <!-- Data Controls -->
-            <div class="data-controls">
-                <button class="data-btn pixel-border-thin" id="exportBtn" aria-label="데이터 내보내기">EXPORT</button>
-                <label class="data-btn pixel-border-thin" aria-label="데이터 가져오기">
-                    IMPORT
-                    <input type="file" id="importInput" accept=".json">
-                </label>
-            </div>
         </div>
     </div>
 
@@ -887,6 +905,21 @@
                 this.saveSessions(sessions);
                 Heatmap.update();
                 Goals.updateProgress();
+            },
+
+            deleteSession(dateKey, sessionIndex) {
+                const sessions = this.loadSessions();
+                if (sessions[dateKey] && sessions[dateKey][sessionIndex]) {
+                    sessions[dateKey].splice(sessionIndex, 1);
+                    if (sessions[dateKey].length === 0) {
+                        delete sessions[dateKey];
+                    }
+                    this.saveSessions(sessions);
+                    Heatmap.update();
+                    Goals.updateProgress();
+                    return true;
+                }
+                return false;
             },
 
             loadState() {
@@ -1020,12 +1053,10 @@
                     mode25: document.getElementById('mode25'),
                     mode50: document.getElementById('mode50'),
                     modeCustom: document.getElementById('modeCustom'),
-                    exportBtn: document.getElementById('exportBtn'),
-                    importInput: document.getElementById('importInput'),
-                    importModal: document.getElementById('importModal'),
-                    importMerge: document.getElementById('importMerge'),
-                    importReplace: document.getElementById('importReplace'),
-                    importCancel: document.getElementById('importCancel'),
+                    sessionModal: document.getElementById('sessionModal'),
+                    sessionModalTitle: document.getElementById('sessionModalTitle'),
+                    sessionList: document.getElementById('sessionList'),
+                    sessionClose: document.getElementById('sessionClose'),
                     statStreak: document.getElementById('statStreak'),
                     statTime: document.getElementById('statTime'),
                     statPeak: document.getElementById('statPeak')
@@ -1664,6 +1695,7 @@
                         cell.addEventListener('mouseenter', this.showTooltip);
                         cell.addEventListener('mouseleave', this.hideTooltip);
                         cell.addEventListener('mousemove', this.moveTooltip);
+                        cell.addEventListener('click', () => SessionManager.showSessions(dateKey));
 
                         dayColumn.appendChild(cell);
                     }
@@ -1708,8 +1740,6 @@
 
         // ==================== MODALS MODULE ====================
         const Modals = {
-            pendingImportData: null,
-
             init() {
                 // Goal Modal - click on goal line to open
                 UI.elements.goalLine.addEventListener('click', () => this.showGoalModal());
@@ -1719,11 +1749,6 @@
                 // Custom Timer Modal
                 UI.elements.customSave.addEventListener('click', () => this.saveCustomMode());
                 UI.elements.customCancel.addEventListener('click', () => this.hideCustomModal());
-
-                // Import Modal
-                UI.elements.importMerge.addEventListener('click', () => this.doImport('merge'));
-                UI.elements.importReplace.addEventListener('click', () => this.doImport('replace'));
-                UI.elements.importCancel.addEventListener('click', () => this.hideImportModal());
             },
 
             showGoalModal() {
@@ -1779,106 +1804,67 @@
                         Timer.applyMode('custom');
                     }
                 }
-            },
-
-            showImportModal(data) {
-                this.pendingImportData = data;
-                UI.elements.importModal.classList.add('show');
-            },
-
-            hideImportModal() {
-                UI.elements.importModal.classList.remove('show');
-                this.pendingImportData = null;
-            },
-
-            doImport(mode) {
-                if (!this.pendingImportData) return;
-
-                const data = this.pendingImportData;
-
-                if (mode === 'merge') {
-                    const existing = Storage.loadSessions();
-                    Object.keys(data.sessions).forEach(date => {
-                        if (existing[date]) {
-                            existing[date] = [...existing[date], ...data.sessions[date]];
-                        } else {
-                            existing[date] = data.sessions[date];
-                        }
-                    });
-                    Storage.saveSessions(existing);
-                } else {
-                    Storage.saveSessions(data.sessions);
-                }
-
-                if (data.settings) {
-                    if (data.settings.customMode) {
-                        Storage.saveCustomMode(data.settings.customMode);
-                        Timer.modes.custom = {
-                            work: data.settings.customMode.work * 60,
-                            break: data.settings.customMode.break * 60
-                        };
-                    }
-                    if (data.settings.goals) {
-                        Storage.saveGoals(data.settings.goals);
-                        Goals.config = data.settings.goals;
-                        Goals.updateProgress();
-                    }
-                }
-
-                Heatmap.update();
-                this.hideImportModal();
             }
         };
 
-        // ==================== DATA MANAGER MODULE ====================
-        const DataManager = {
+        // ==================== SESSION MANAGER MODULE ====================
+        const SessionManager = {
+            currentDate: null,
+
             init() {
-                UI.elements.exportBtn.addEventListener('click', () => this.exportData());
-                UI.elements.importInput.addEventListener('change', (e) => this.handleImport(e));
+                UI.elements.sessionClose.addEventListener('click', () => this.hideModal());
             },
 
-            exportData() {
-                const data = {
-                    version: '1.0',
-                    exportedAt: new Date().toISOString(),
-                    sessions: Storage.loadSessions(),
-                    settings: {
-                        theme: Storage.loadTheme(),
-                        customMode: Storage.loadCustomMode(),
-                        goals: Storage.loadGoals()
-                    }
-                };
+            showSessions(dateKey) {
+                this.currentDate = dateKey;
+                const sessions = Storage.loadSessions();
+                const daySessions = sessions[dateKey] || [];
 
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
+                const [year, month, day] = dateKey.split('-');
+                UI.elements.sessionModalTitle.textContent = `${month}/${day} SESSIONS`;
 
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `pomodoro-backup-${Storage.getDateKey()}.json`;
-                a.click();
+                if (daySessions.length === 0) {
+                    UI.elements.sessionList.innerHTML = '<div class="session-empty">NO SESSIONS</div>';
+                } else {
+                    UI.elements.sessionList.innerHTML = daySessions.map((session, index) => `
+                        <div class="session-item">
+                            <div class="session-info">
+                                <div>${session.duration}M ${session.completed ? '✓' : '(INCOMPLETE)'}</div>
+                                <div class="session-time">${session.startTime} - ${session.endTime}</div>
+                            </div>
+                            <button class="session-delete" data-index="${index}">DELETE</button>
+                        </div>
+                    `).join('');
 
-                URL.revokeObjectURL(url);
-            },
-
-            async handleImport(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                try {
-                    const text = await file.text();
-                    const data = JSON.parse(text);
-
-                    if (!data.version || !data.sessions) {
-                        throw new Error('Invalid backup file format');
-                    }
-
-                    Modals.showImportModal(data);
-                } catch (error) {
-                    console.error('Import failed:', error);
-                    await UI.showConfirm('ERROR', 'Failed to import data.', 'OK');
+                    // Bind delete buttons
+                    UI.elements.sessionList.querySelectorAll('.session-delete').forEach(btn => {
+                        btn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const index = parseInt(btn.dataset.index);
+                            await this.deleteSession(index);
+                        });
+                    });
                 }
 
-                e.target.value = '';
+                UI.elements.sessionModal.classList.add('show');
+            },
+
+            hideModal() {
+                UI.elements.sessionModal.classList.remove('show');
+                this.currentDate = null;
+            },
+
+            async deleteSession(index) {
+                const confirmed = await UI.showConfirm(
+                    'DELETE?',
+                    'This session will be removed.',
+                    'DELETE'
+                );
+
+                if (confirmed) {
+                    Storage.deleteSession(this.currentDate, index);
+                    this.showSessions(this.currentDate); // Refresh list
+                }
             }
         };
 
@@ -2028,7 +2014,7 @@
             Theme.init();
             Notification.init();
             Modals.init();
-            DataManager.init();
+            SessionManager.init();
             Goals.init();
             Heatmap.init();
             bindEvents();
