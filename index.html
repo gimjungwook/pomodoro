@@ -13,6 +13,9 @@
     <title>POMODORO</title>
     <!-- Favicon - 8x8 pixel tomato (black/white) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><rect x='3' y='0' width='2' height='1' fill='black'/><rect x='2' y='1' width='4' height='1' fill='black'/><rect x='1' y='2' width='6' height='1' fill='black'/><rect x='1' y='3' width='6' height='1' fill='black'/><rect x='1' y='4' width='6' height='1' fill='black'/><rect x='1' y='5' width='6' height='1' fill='black'/><rect x='2' y='6' width='4' height='1' fill='black'/><rect x='3' y='7' width='2' height='1' fill='black'/></svg>">
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1213,6 +1216,9 @@
                 UI.elements.startBtn.classList.add('active');
                 UI.elements.timerDisplay.classList.remove('paused');
 
+                // Keep screen on
+                PWA.requestWakeLock();
+
                 Storage.saveState();
 
                 this.state.intervalId = setInterval(() => {
@@ -1247,6 +1253,9 @@
                 UI.elements.timerDisplay.classList.add('paused');
                 clearInterval(this.state.intervalId);
                 document.title = 'POMODORO';
+
+                // Allow screen to turn off
+                PWA.releaseWakeLock();
 
                 Storage.saveState();
             },
@@ -1925,6 +1934,53 @@
             }
         };
 
+        // ==================== PWA MODULE ====================
+        const PWA = {
+            wakeLock: null,
+
+            init() {
+                // Register Service Worker
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(() => console.log('SW registered'))
+                        .catch((err) => console.log('SW registration failed:', err));
+                }
+
+                // Prevent accidental back navigation
+                window.history.pushState(null, '', window.location.href);
+                window.addEventListener('popstate', () => {
+                    window.history.pushState(null, '', window.location.href);
+                });
+
+                // Warn before leaving if timer is running
+                window.addEventListener('beforeunload', (e) => {
+                    if (Timer.state.isRunning) {
+                        e.preventDefault();
+                        e.returnValue = '';
+                    }
+                });
+            },
+
+            async requestWakeLock() {
+                if ('wakeLock' in navigator) {
+                    try {
+                        this.wakeLock = await navigator.wakeLock.request('screen');
+                        console.log('Wake Lock activated');
+                    } catch (err) {
+                        console.log('Wake Lock failed:', err);
+                    }
+                }
+            },
+
+            releaseWakeLock() {
+                if (this.wakeLock) {
+                    this.wakeLock.release();
+                    this.wakeLock = null;
+                    console.log('Wake Lock released');
+                }
+            }
+        };
+
         // ==================== NOTIFICATION MODULE ====================
         const Notification = {
             init() {
@@ -2055,6 +2111,7 @@
             SessionManager.init();
             Goals.init();
             Heatmap.init();
+            PWA.init();
             bindEvents();
 
             if (!Timer.checkForResume()) {
