@@ -380,6 +380,24 @@
             gap: 2px;
         }
 
+        /* Bottom: Time labels */
+        .heatmap-times {
+            display: flex;
+            gap: 2px;
+            height: 18px;
+            margin-top: 4px;
+        }
+
+        .time-label {
+            width: 16px;
+            font-size: 0.3rem;
+            text-align: center;
+            opacity: 0.6;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
         /* Each day column */
         .heatmap-day {
             display: flex;
@@ -873,6 +891,8 @@
                     <div class="heatmap-dates" id="heatmapDates"></div>
                     <!-- 메인 그리드 -->
                     <div class="heatmap-grid" id="heatmapGrid"></div>
+                    <!-- 아래: 일별 총 시간 -->
+                    <div class="heatmap-times" id="heatmapTimes"></div>
                 </div>
             </div>
 
@@ -1066,6 +1086,7 @@
                     heatmapHours: document.getElementById('heatmapHours'),
                     heatmapDates: document.getElementById('heatmapDates'),
                     heatmapGrid: document.getElementById('heatmapGrid'),
+                    heatmapTimes: document.getElementById('heatmapTimes'),
                     heatmapTooltip: document.getElementById('heatmapTooltip'),
                     totalSessions: document.getElementById('totalSessions'),
                     confirmModal: document.getElementById('confirmModal'),
@@ -1238,13 +1259,19 @@
                 this.state.isRunning = true;
                 this.state.lastTick = Date.now();
 
-                if (!this.state.sessionStartTime) {
+                const isNewSession = !this.state.sessionStartTime;
+                if (isNewSession) {
                     this.state.sessionStartTime = Date.now();
                 }
 
                 UI.elements.startBtn.textContent = 'PAUSE';
                 UI.elements.startBtn.classList.add('active');
                 UI.elements.timerDisplay.classList.remove('paused');
+
+                // Speak quote when starting a new work session
+                if (isNewSession && this.state.isWorkSession) {
+                    TTS.speakQuote();
+                }
 
                 // Keep screen on
                 PWA.requestWakeLock();
@@ -1635,6 +1662,7 @@
                 if (dates.length === 0) {
                     UI.elements.heatmapDates.innerHTML = '';
                     UI.elements.heatmapGrid.innerHTML = '<div class="heatmap-empty">NO DATA YET</div>';
+                    UI.elements.heatmapTimes.innerHTML = '';
                     UI.elements.totalSessions.textContent = '0 SESSIONS';
                     Stats.update();
                     return;
@@ -1747,6 +1775,17 @@
                     }
 
                     UI.elements.heatmapGrid.appendChild(dayColumn);
+                });
+
+                // 아래에 일별 총 시간 표시
+                UI.elements.heatmapTimes.innerHTML = '';
+                daysData.forEach(({ hoursData }) => {
+                    const label = document.createElement('div');
+                    label.className = 'time-label';
+                    const totalMinutesForDay = hoursData.reduce((sum, min) => sum + min, 0);
+                    const hours = (totalMinutesForDay / 60).toFixed(1);
+                    label.textContent = hours;
+                    UI.elements.heatmapTimes.appendChild(label);
                 });
 
                 UI.elements.totalSessions.textContent = `${totalSessions} SESSIONS`;
@@ -2084,7 +2123,7 @@
                 try {
                     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-                    [0, 200, 400].forEach(delay => {
+                    [0, 200, 400, 600, 800, 1000, 1200, 1400].forEach(delay => {
                         setTimeout(() => {
                             const oscillator = audioContext.createOscillator();
                             const gainNode = audioContext.createGain();
@@ -2104,6 +2143,64 @@
                     });
                 } catch (error) {
                     console.error('Failed to play sound:', error);
+                }
+            }
+        };
+
+        // ==================== TTS MODULE ====================
+        const TTS = {
+            cachedVoice: null,
+
+            init() {
+                // Preload voices
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.getVoices();
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        this.cachedVoice = this.findMaleVoice();
+                    };
+                }
+            },
+
+            findMaleVoice() {
+                const voices = window.speechSynthesis.getVoices();
+                // macOS/iOS male voices priority
+                const maleNames = ['alex', 'daniel', 'fred', 'lee', 'thomas', 'google us english male', 'microsoft david'];
+
+                for (const name of maleNames) {
+                    const found = voices.find(v => v.name.toLowerCase().includes(name));
+                    if (found) return found;
+                }
+
+                // Fallback to any English voice
+                return voices.find(v => v.lang.startsWith('en')) || voices[0];
+            },
+
+            speak(text) {
+                if (!text || !('speechSynthesis' in window)) return;
+
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+
+                // Deep robotic male voice settings
+                utterance.pitch = 0.1;  // Very low pitch (0-2, default 1)
+                utterance.rate = 0.7;   // Slower rate (0.1-10, default 1)
+                utterance.volume = 1.0;
+
+                // Use cached voice or find one
+                const voice = this.cachedVoice || this.findMaleVoice();
+                if (voice) {
+                    utterance.voice = voice;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            },
+
+            speakQuote() {
+                const quote = Quote.get();
+                if (quote) {
+                    this.speak(quote);
                 }
             }
         };
@@ -2177,6 +2274,7 @@
             Goals.init();
             Heatmap.init();
             PWA.init();
+            TTS.init();
             bindEvents();
 
             if (!Timer.checkForResume()) {
