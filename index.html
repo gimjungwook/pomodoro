@@ -28,6 +28,10 @@
             --bg: #ffffff;
             --primary: #000000;
             --pixel-size: 4px;
+            --focus-high: #22c55e;
+            --focus-medium: #eab308;
+            --focus-low: #ef4444;
+            --focus-unknown: #6b7280;
         }
 
         .dark {
@@ -427,6 +431,12 @@
         .heatmap-cell.filled-4 { opacity: 0.85; background: var(--primary); }
         .heatmap-cell.filled-5 { opacity: 1; background: var(--primary); }
 
+        /* Focus colors on border */
+        .heatmap-cell.focus-3 { border: 2px solid var(--focus-high); }
+        .heatmap-cell.focus-2 { border: 2px solid var(--focus-medium); }
+        .heatmap-cell.focus-1 { border: 2px solid var(--focus-low); }
+        .heatmap-cell.focus-0 { border: 2px solid var(--focus-unknown); }
+
         .heatmap-cell.today {
             box-shadow: inset 0 0 0 2px var(--bg), 0 0 0 1px var(--primary);
         }
@@ -731,6 +741,54 @@
         .input-row .input-group {
             flex: 1;
         }
+
+        /* Focus Rating Modal */
+        .focus-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .focus-btn {
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .focus-btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        /* Data Export/Import */
+        .data-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .data-btn {
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            padding: 8px 12px;
+            font-family: inherit;
+            font-size: 0.35rem;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+        }
+
+        .data-btn:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -813,6 +871,19 @@
             <div class="modal-buttons">
                 <button class="modal-btn pixel-border-thin" id="quoteCancel">CANCEL</button>
                 <button class="modal-btn primary pixel-border-thin" id="quoteSave">SAVE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus Rating Modal -->
+    <div class="modal" id="focusModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
+            <h2>FOCUS RATING</h2>
+            <div class="focus-options">
+                <button class="focus-btn pixel-border-thin" data-rating="3">★★★</button>
+                <button class="focus-btn pixel-border-thin" data-rating="2">★★☆</button>
+                <button class="focus-btn pixel-border-thin" data-rating="1">★☆☆</button>
+                <button class="focus-btn pixel-border-thin" data-rating="0">?</button>
             </div>
         </div>
     </div>
@@ -915,6 +986,12 @@
         <button class="footer-btn" id="notificationBtn" aria-label="알림 설정">NOTIFY</button>
         <button class="footer-btn" id="themeBtn" aria-label="테마 변경">DARK</button>
         <button class="footer-btn" id="advancedBtn" aria-label="고급 설정">ADVANCED</button>
+    </div>
+
+    <!-- Data Export/Import (Advanced only) -->
+    <div class="data-controls advanced-only">
+        <button class="data-btn" id="exportBtn">EXPORT DATA</button>
+        <button class="data-btn" id="importBtn">IMPORT DATA</button>
     </div>
 
     <script>
@@ -1119,7 +1196,10 @@
                     quoteModal: document.getElementById('quoteModal'),
                     quoteInput: document.getElementById('quoteInput'),
                     quoteSave: document.getElementById('quoteSave'),
-                    quoteCancel: document.getElementById('quoteCancel')
+                    quoteCancel: document.getElementById('quoteCancel'),
+                    focusModal: document.getElementById('focusModal'),
+                    exportBtn: document.getElementById('exportBtn'),
+                    importBtn: document.getElementById('importBtn')
                 };
             },
 
@@ -1279,8 +1359,8 @@
                 Storage.saveState();
 
                 this.state.intervalId = setInterval(() => {
-                    this.state.timeRemaining--;
                     this.state.lastTick = Date.now();
+                    this.state.timeRemaining--;
 
                     UI.updateDisplay();
                     UI.updateProgress();
@@ -1331,7 +1411,8 @@
                 const wasRunning = this.state.isRunning;
                 this.pause();
 
-                if (wasRunning && this.state.isWorkSession && this.state.sessionStartTime) {
+                // 세션 기록 (작업 세션인 경우)
+                if (wasRunning && this.state.sessionStartTime && this.state.isWorkSession) {
                     const elapsed = Math.floor((this.state.totalTime - this.state.timeRemaining) / 60);
                     if (elapsed >= 1) {
                         Storage.addSession({
@@ -1373,18 +1454,11 @@
                 Notification.show();
                 UI.celebrate();
 
-                if (this.state.isWorkSession && this.state.sessionStartTime) {
-                    Storage.addSession({
-                        startTime: Utils.formatTime(new Date(this.state.sessionStartTime)),
-                        endTime: Utils.formatTime(new Date()),
-                        duration: Math.floor(this.state.totalTime / 60),
-                        type: 'work',
-                        completed: true
-                    });
+                const wasWorkSession = this.state.isWorkSession;
+                const sessionStartTime = this.state.sessionStartTime;
+                const completedDuration = Math.floor(this.state.totalTime / 60);
 
-                    this.state.completedPomodoros++;
-                }
-
+                // 타이머 상태 전환
                 if (this.state.isWorkSession) {
                     this.state.timeRemaining = this.modes[this.state.mode].break;
                     this.state.totalTime = this.modes[this.state.mode].break;
@@ -1400,6 +1474,20 @@
                 UI.updateProgress();
                 UI.updateSessionLabel();
                 Storage.clearState();
+
+                // 작업 세션 완료 시 집중도 평가 모달 표시
+                if (wasWorkSession && sessionStartTime) {
+                    const sessionData = {
+                        startTime: Utils.formatTime(new Date(sessionStartTime)),
+                        endTime: Utils.formatTime(new Date()),
+                        duration: completedDuration,
+                        type: 'work',
+                        completed: true
+                    };
+
+                    this.state.completedPomodoros++;
+                    FocusRating.show(sessionData);
+                }
             },
 
             async setMode(mode) {
@@ -1408,7 +1496,9 @@
                     return;
                 }
 
-                if (this.state.isRunning || this.state.timeRemaining < this.state.totalTime) {
+                const hasProgress = this.state.timeRemaining < this.state.totalTime;
+
+                if (this.state.isRunning || hasProgress) {
                     const confirmed = await UI.showConfirm(
                         'CHANGE MODE?',
                         'Timer will be reset.',
@@ -1425,11 +1515,13 @@
                 UI.updateModeButtons();
 
                 this.pause();
+                this.state.sessionStartTime = null;
+                UI.elements.timerDisplay.classList.remove('paused');
+
                 this.state.isWorkSession = true;
                 this.state.timeRemaining = this.modes[this.state.mode].work;
                 this.state.totalTime = this.modes[this.state.mode].work;
-                this.state.sessionStartTime = null;
-                UI.elements.timerDisplay.classList.remove('paused');
+
                 UI.updateDisplay();
                 UI.updateProgress();
                 UI.updateSessionLabel();
@@ -1537,7 +1629,7 @@
                     .filter(s => s.type === 'work')
                     .reduce((sum, s) => sum + s.duration, 0);
 
-                if (Timer.state.isRunning && Timer.state.isWorkSession && Timer.state.sessionStartTime) {
+                if (Timer.state.isRunning && Timer.state.sessionStartTime && Timer.state.isWorkSession) {
                     total += Math.floor((Timer.state.totalTime - Timer.state.timeRemaining) / 60);
                 }
 
@@ -1676,12 +1768,14 @@
                 let currentSessionHour = -1;
                 let currentSessionStartMinute = 0;
 
-                if (Timer.state.isRunning && Timer.state.isWorkSession && Timer.state.sessionStartTime) {
+                if (Timer.state.isRunning && Timer.state.sessionStartTime && Timer.state.isWorkSession) {
                     const elapsed = Math.floor((Timer.state.totalTime - Timer.state.timeRemaining) / 60);
-                    currentSessionMinutes = elapsed;
-                    const startDate = new Date(Timer.state.sessionStartTime);
-                    currentSessionHour = startDate.getHours();
-                    currentSessionStartMinute = startDate.getMinutes();
+                    if (elapsed > 0) {
+                        currentSessionMinutes = elapsed;
+                        const startDate = new Date(Timer.state.sessionStartTime);
+                        currentSessionHour = startDate.getHours();
+                        currentSessionStartMinute = startDate.getMinutes();
+                    }
                 }
 
                 if (currentSessionMinutes > 0 && !dates.includes(todayKey)) {
@@ -1692,11 +1786,14 @@
                 const daysData = dates.map(dateKey => {
                     const daySessions = sessions[dateKey] || [];
                     const hoursData = new Array(24).fill(0);
+                    // 집중도 데이터: { weightedSum, minutesWithFocus }
+                    const hoursFocusData = new Array(24).fill(null).map(() => ({ weightedSum: 0, minutesWithFocus: 0 }));
 
                     daySessions.forEach(session => {
                         if (session.type === 'work') {
                             const [hours, minutes] = session.startTime.split(':').map(Number);
                             const duration = session.duration;
+                            const hasFocus = session.focus !== undefined;
 
                             let remaining = duration;
                             let currentHour = hours;
@@ -1705,6 +1802,13 @@
                             while (remaining > 0 && currentHour < 24) {
                                 const minutesInThisHour = Math.min(remaining, 60 - currentMinute);
                                 hoursData[currentHour] += minutesInThisHour;
+
+                                // 집중도 가중치 계산
+                                if (hasFocus) {
+                                    hoursFocusData[currentHour].weightedSum += minutesInThisHour * session.focus;
+                                    hoursFocusData[currentHour].minutesWithFocus += minutesInThisHour;
+                                }
+
                                 remaining -= minutesInThisHour;
                                 currentHour++;
                                 currentMinute = 0;
@@ -1731,7 +1835,7 @@
                         totalMinutes += currentSessionMinutes;
                     }
 
-                    return { dateKey, hoursData };
+                    return { dateKey, hoursData, hoursFocusData };
                 });
 
                 UI.elements.heatmapDates.innerHTML = '';
@@ -1744,7 +1848,7 @@
                 });
 
                 UI.elements.heatmapGrid.innerHTML = '';
-                daysData.forEach(({ dateKey, hoursData }) => {
+                daysData.forEach(({ dateKey, hoursData, hoursFocusData }) => {
                     const dayColumn = document.createElement('div');
                     dayColumn.className = 'heatmap-day';
 
@@ -1758,6 +1862,14 @@
                             cell.classList.add(`filled-${level}`);
                         }
 
+                        // 집중도 클래스 추가
+                        const focusData = hoursFocusData[hour];
+                        let avgFocus = -1;
+                        if (focusData.minutesWithFocus > 0) {
+                            avgFocus = Math.round(focusData.weightedSum / focusData.minutesWithFocus);
+                            cell.classList.add(`focus-${avgFocus}`);
+                        }
+
                         if (dateKey === todayKey) {
                             cell.classList.add('today');
                         }
@@ -1765,6 +1877,7 @@
                         cell.dataset.date = dateKey;
                         cell.dataset.hour = hour;
                         cell.dataset.minutes = minutes;
+                        cell.dataset.focus = avgFocus;
 
                         cell.addEventListener('mouseenter', this.showTooltip);
                         cell.addEventListener('mouseleave', this.hideTooltip);
@@ -1801,14 +1914,24 @@
                 const date = cell.dataset.date;
                 const hour = cell.dataset.hour;
                 const minutes = cell.dataset.minutes;
+                const focus = parseInt(cell.dataset.focus);
 
                 const [year, month, day] = date.split('-');
                 const hourNum = parseInt(hour);
                 const minNum = parseInt(minutes);
 
+                // 집중도 표시
+                let focusDisplay = '';
+                if (focus >= 0) {
+                    if (focus === 3) focusDisplay = '<br>FOCUS: ★★★';
+                    else if (focus === 2) focusDisplay = '<br>FOCUS: ★★☆';
+                    else if (focus === 1) focusDisplay = '<br>FOCUS: ★☆☆';
+                    else focusDisplay = '<br>FOCUS: ?';
+                }
+
                 UI.elements.heatmapTooltip.innerHTML = `
                     ${month}/${day} ${hourNum.toString().padStart(2, '0')}:00<br>
-                    ${minNum > 0 ? minNum + 'M STUDIED' : 'NO DATA'}
+                    ${minNum > 0 ? minNum + 'M STUDIED' : 'NO DATA'}${focusDisplay}
                 `;
                 UI.elements.heatmapTooltip.classList.add('show');
             },
@@ -1911,15 +2034,26 @@
                 if (daySessions.length === 0) {
                     UI.elements.sessionList.innerHTML = '<div class="session-empty">NO SESSIONS</div>';
                 } else {
-                    UI.elements.sessionList.innerHTML = daySessions.map((session, index) => `
-                        <div class="session-item">
-                            <div class="session-info">
-                                <div>${session.duration}M ${session.completed ? '✓' : '(INCOMPLETE)'}</div>
-                                <div class="session-time">${session.startTime} - ${session.endTime}</div>
+                    UI.elements.sessionList.innerHTML = daySessions.map((session, index) => {
+                        // 집중도 표시
+                        let focusDisplay = '';
+                        if (session.focus !== undefined) {
+                            if (session.focus === 3) focusDisplay = '★★★';
+                            else if (session.focus === 2) focusDisplay = '★★☆';
+                            else if (session.focus === 1) focusDisplay = '★☆☆';
+                            else focusDisplay = '?';
+                        }
+
+                        return `
+                            <div class="session-item">
+                                <div class="session-info">
+                                    <div>${session.duration}M ${session.completed ? '✓' : '(INCOMPLETE)'} ${focusDisplay}</div>
+                                    <div class="session-time">${session.startTime} - ${session.endTime}</div>
+                                </div>
+                                <button class="session-delete" data-index="${index}">DELETE</button>
                             </div>
-                            <button class="session-delete" data-index="${index}">DELETE</button>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
 
                     // Bind delete buttons
                     UI.elements.sessionList.querySelectorAll('.session-delete').forEach(btn => {
@@ -2205,6 +2339,106 @@
             }
         };
 
+        // ==================== DATA MANAGER MODULE ====================
+        const DataManager = {
+            export() {
+                const data = {
+                    sessions: localStorage.getItem('pomodoroSessions'),
+                    goals: localStorage.getItem('pomodoroGoals'),
+                    quote: localStorage.getItem('pomodoroQuote'),
+                    customMode: localStorage.getItem('pomodoroCustomMode'),
+                    theme: localStorage.getItem('theme'),
+                    exportedAt: new Date().toISOString()
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `pomodoro-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            },
+
+            async import() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    try {
+                        const text = await file.text();
+                        const data = JSON.parse(text);
+
+                        const confirmed = await UI.showConfirm(
+                            'IMPORT DATA?',
+                            'This will overwrite current data.',
+                            'IMPORT'
+                        );
+
+                        if (!confirmed) return;
+
+                        if (data.sessions) localStorage.setItem('pomodoroSessions', data.sessions);
+                        if (data.goals) localStorage.setItem('pomodoroGoals', data.goals);
+                        if (data.quote) localStorage.setItem('pomodoroQuote', data.quote);
+                        if (data.customMode) localStorage.setItem('pomodoroCustomMode', data.customMode);
+                        if (data.theme) localStorage.setItem('theme', data.theme);
+
+                        location.reload();
+                    } catch (error) {
+                        alert('Invalid file format');
+                    }
+                };
+
+                input.click();
+            }
+        };
+
+        // ==================== FOCUS RATING MODULE ====================
+        const FocusRating = {
+            pendingSession: null,
+
+            init() {
+                const buttons = UI.elements.focusModal.querySelectorAll('.focus-btn');
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const rating = parseInt(btn.dataset.rating);
+                        this.saveWithRating(rating);
+                    });
+                });
+            },
+
+            show(sessionData) {
+                this.pendingSession = sessionData;
+                UI.elements.focusModal.classList.add('show');
+            },
+
+            hide() {
+                UI.elements.focusModal.classList.remove('show');
+                this.pendingSession = null;
+            },
+
+            saveWithRating(rating) {
+                if (this.pendingSession) {
+                    this.pendingSession.focus = rating;
+                    Storage.addSession(this.pendingSession);
+                }
+                this.hide();
+            },
+
+            // 평가 전 새로고침 시 호출
+            savePendingWithDefault() {
+                if (this.pendingSession) {
+                    this.pendingSession.focus = 0;
+                    Storage.addSession(this.pendingSession);
+                    this.pendingSession = null;
+                }
+            }
+        };
+
         // ==================== UTILS MODULE ====================
         const Utils = {
             formatTime(date) {
@@ -2221,6 +2455,9 @@
             UI.elements.mode25.addEventListener('click', () => Timer.setMode('25/5'));
             UI.elements.mode50.addEventListener('click', () => Timer.setMode('50/10'));
             UI.elements.modeCustom.addEventListener('click', () => Timer.setMode('custom'));
+
+            UI.elements.exportBtn.addEventListener('click', () => DataManager.export());
+            UI.elements.importBtn.addEventListener('click', () => DataManager.import());
 
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -2255,6 +2492,9 @@
             });
 
             window.addEventListener('beforeunload', () => {
+                // 평가 전 새로고침 시 기본값으로 저장
+                FocusRating.savePendingWithDefault();
+
                 if (Timer.state.isRunning || Timer.state.timeRemaining < Timer.state.totalTime) {
                     Storage.saveState();
                 }
@@ -2275,6 +2515,7 @@
             Heatmap.init();
             PWA.init();
             TTS.init();
+            FocusRating.init();
             bindEvents();
 
             if (!Timer.checkForResume()) {
