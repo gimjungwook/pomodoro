@@ -128,6 +128,26 @@
             50% { transform: scale(1.05); }
         }
 
+        /* Color flip animation for timer completion */
+        @keyframes colorFlip {
+            0%, 100% {
+                background-color: var(--bg);
+                color: var(--primary);
+            }
+            50% {
+                background-color: var(--primary);
+                color: var(--bg);
+            }
+        }
+
+        body.color-flipping {
+            animation: colorFlip 0.3s ease-in-out infinite;
+        }
+
+        body.color-flipping .timer-container {
+            animation: colorFlip 0.3s ease-in-out infinite;
+        }
+
         .session-label {
             font-size: 0.7rem;
             margin-bottom: 20px;
@@ -1299,6 +1319,19 @@
                 setTimeout(() => {
                     this.elements.timerContainer.classList.remove('celebrate');
                 }, 1500);
+            },
+
+            colorFlip() {
+                // Focus the window
+                window.focus();
+
+                // Start color flipping animation
+                document.body.classList.add('color-flipping');
+
+                // Stop after 3 seconds
+                setTimeout(() => {
+                    document.body.classList.remove('color-flipping');
+                }, 3000);
             }
         };
 
@@ -1456,6 +1489,7 @@
                 Sound.play();
                 Notification.show();
                 UI.celebrate();
+                UI.colorFlip();
 
                 const wasWorkSession = this.state.isWorkSession;
                 const sessionStartTime = this.state.sessionStartTime;
