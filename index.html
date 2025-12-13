@@ -1007,6 +1007,7 @@
     <!-- Footer Controls -->
     <div class="footer-controls">
         <button class="footer-btn" id="notificationBtn" aria-label="알림 설정">NOTIFY</button>
+        <button class="footer-btn" id="muteBtn" aria-label="음소거">MUTE</button>
         <button class="footer-btn" id="themeBtn" aria-label="테마 변경">DARK</button>
         <button class="footer-btn" id="advancedBtn" aria-label="고급 설정">ADVANCED</button>
     </div>
@@ -1222,7 +1223,8 @@
                     quoteCancel: document.getElementById('quoteCancel'),
                     focusModal: document.getElementById('focusModal'),
                     exportBtn: document.getElementById('exportBtn'),
-                    importBtn: document.getElementById('importBtn')
+                    importBtn: document.getElementById('importBtn'),
+                    muteBtn: document.getElementById('muteBtn')
                 };
             },
 
@@ -2291,6 +2293,7 @@
         // ==================== SOUND MODULE ====================
         const Sound = {
             play() {
+                if (Mute.isMuted) return;
                 try {
                     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -2347,7 +2350,7 @@
             },
 
             speak(text) {
-                if (!text || !('speechSynthesis' in window)) return;
+                if (!text || !('speechSynthesis' in window) || Mute.isMuted) return;
 
                 // Cancel any ongoing speech
                 window.speechSynthesis.cancel();
@@ -2372,6 +2375,33 @@
                 const quote = Quote.get();
                 if (quote) {
                     this.speak(quote);
+                }
+            }
+        };
+
+        // ==================== MUTE MODULE ====================
+        const Mute = {
+            isMuted: false,
+
+            init() {
+                this.isMuted = localStorage.getItem('pomodoroMuted') === 'true';
+                this.updateUI();
+                UI.elements.muteBtn.addEventListener('click', () => this.toggle());
+            },
+
+            toggle() {
+                this.isMuted = !this.isMuted;
+                localStorage.setItem('pomodoroMuted', this.isMuted);
+                this.updateUI();
+            },
+
+            updateUI() {
+                if (this.isMuted) {
+                    UI.elements.muteBtn.textContent = 'UNMUTE';
+                    UI.elements.muteBtn.classList.add('active');
+                } else {
+                    UI.elements.muteBtn.textContent = 'MUTE';
+                    UI.elements.muteBtn.classList.remove('active');
                 }
             }
         };
@@ -2553,6 +2583,7 @@
             PWA.init();
             TTS.init();
             FocusRating.init();
+            Mute.init();
             bindEvents();
 
             if (!Timer.checkForResume()) {
