@@ -17,7 +17,24 @@
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- Fonts: English (Press Start 2P), Korean (Galmuri11 Bold), Japanese (PixelMplus12 Bold) -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Galmuri11Bold';
+            src: url('https://cdn.jsdelivr.net/gh/fonts-archive/Galmuri11/Galmuri11-Bold.woff2') format('woff2');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'PixelMplus12Bold';
+            src: url('https://cdn.leafscape.be/PixelMplus/PixelMplus12-Bold_web.woff2') format('woff2');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+    </style>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         * {
@@ -81,6 +98,25 @@
         .amber {
             --bg: #1a1a0a;
             --primary: #ffbf00;
+        }
+
+        /* Language-specific fonts */
+        body.lang-en {
+            font-family: 'Press Start 2P', cursive;
+        }
+        body.lang-ko {
+            font-family: 'Galmuri11Bold', monospace !important;
+        }
+        body.lang-ja {
+            font-family: 'PixelMplus12Bold', sans-serif !important;
+        }
+
+        /* Language-specific font scaling (rem is relative to html) */
+        html.lang-ko {
+            font-size: 150% !important;
+        }
+        html.lang-ja {
+            font-size: 150% !important;
         }
 
         body {
@@ -924,7 +960,7 @@
         }
     </style>
 </head>
-<body>
+<body class="lang-en">
     <!-- Tooltip -->
     <div class="heatmap-tooltip" id="heatmapTooltip"></div>
 
@@ -949,14 +985,14 @@
     <!-- Goal Settings Modal -->
     <div class="modal" id="goalModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
-            <h2>DAILY GOAL</h2>
+            <h2 data-i18n="dailyGoal">DAILY GOAL</h2>
             <div class="input-group">
-                <label>TARGET (MINUTES)</label>
+                <label data-i18n="targetMinutes">TARGET (MINUTES)</label>
                 <input type="number" id="goalInput" min="1" max="480" value="120">
             </div>
             <div class="modal-buttons">
-                <button class="modal-btn pixel-border-thin" id="goalCancel">CANCEL</button>
-                <button class="modal-btn primary pixel-border-thin" id="goalSave">SAVE</button>
+                <button class="modal-btn pixel-border-thin" id="goalCancel" data-i18n="cancel">CANCEL</button>
+                <button class="modal-btn primary pixel-border-thin" id="goalSave" data-i18n="save">SAVE</button>
             </div>
         </div>
     </div>
@@ -964,20 +1000,20 @@
     <!-- Custom Timer Modal -->
     <div class="modal" id="customModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
-            <h2>CUSTOM TIMER</h2>
+            <h2 data-i18n="customTimer">CUSTOM TIMER</h2>
             <div class="input-row">
                 <div class="input-group">
-                    <label>WORK (MIN)</label>
+                    <label data-i18n="workMinutes">WORK (MIN)</label>
                     <input type="number" id="customWorkInput" min="1" max="120" value="25">
                 </div>
                 <div class="input-group">
-                    <label>BREAK (MIN)</label>
+                    <label data-i18n="breakMinutes">BREAK (MIN)</label>
                     <input type="number" id="customBreakInput" min="1" max="60" value="5">
                 </div>
             </div>
             <div class="modal-buttons">
-                <button class="modal-btn pixel-border-thin" id="customCancel">CANCEL</button>
-                <button class="modal-btn primary pixel-border-thin" id="customSave">SAVE</button>
+                <button class="modal-btn pixel-border-thin" id="customCancel" data-i18n="cancel">CANCEL</button>
+                <button class="modal-btn primary pixel-border-thin" id="customSave" data-i18n="save">SAVE</button>
             </div>
         </div>
     </div>
@@ -985,10 +1021,10 @@
     <!-- Session List Modal -->
     <div class="modal" id="sessionModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
-            <h2 id="sessionModalTitle">SESSIONS</h2>
+            <h2 id="sessionModalTitle" data-i18n="sessions">SESSIONS</h2>
             <div class="session-list" id="sessionList"></div>
             <div class="modal-buttons">
-                <button class="modal-btn pixel-border-thin" id="sessionClose">CLOSE</button>
+                <button class="modal-btn pixel-border-thin" id="sessionClose" data-i18n="close">CLOSE</button>
             </div>
         </div>
     </div>
@@ -996,14 +1032,14 @@
     <!-- Quote Modal -->
     <div class="modal" id="quoteModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
-            <h2>SET QUOTE</h2>
+            <h2 data-i18n="quote">SET QUOTE</h2>
             <div class="input-group">
-                <label>YOUR QUOTE</label>
+                <label data-i18n="yourQuote">YOUR QUOTE</label>
                 <input type="text" id="quoteInput" maxlength="100" placeholder="WORK">
             </div>
             <div class="modal-buttons">
-                <button class="modal-btn pixel-border-thin" id="quoteCancel">CANCEL</button>
-                <button class="modal-btn primary pixel-border-thin" id="quoteSave">SAVE</button>
+                <button class="modal-btn pixel-border-thin" id="quoteCancel" data-i18n="cancel">CANCEL</button>
+                <button class="modal-btn primary pixel-border-thin" id="quoteSave" data-i18n="save">SAVE</button>
             </div>
         </div>
     </div>
@@ -1011,7 +1047,7 @@
     <!-- Focus Rating Modal -->
     <div class="modal" id="focusModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
-            <h2>FOCUS RATING</h2>
+            <h2 data-i18n="focusRating">FOCUS RATING</h2>
             <div class="focus-options">
                 <button class="focus-btn pixel-border-thin" data-rating="3">★★★</button>
                 <button class="focus-btn pixel-border-thin" data-rating="2">★★☆</button>
@@ -1024,24 +1060,24 @@
     <!-- Settings Modal -->
     <div class="modal" id="settingsModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
-            <h2>SETTINGS</h2>
+            <h2 data-i18n="settings">SETTINGS</h2>
             <div class="settings-options">
                 <div class="settings-row">
-                    <span class="settings-label">NOTIFY</span>
+                    <span class="settings-label" data-i18n="notify">NOTIFY</span>
                     <label class="toggle-switch">
                         <input type="checkbox" id="settingsNotifyToggle">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
                 <div class="settings-row">
-                    <span class="settings-label">MUTE</span>
+                    <span class="settings-label" data-i18n="mute">MUTE</span>
                     <label class="toggle-switch">
                         <input type="checkbox" id="settingsMuteToggle">
                         <span class="toggle-slider"></span>
                     </label>
                 </div>
                 <div class="settings-row">
-                    <span class="settings-label">ADVANCED</span>
+                    <span class="settings-label" data-i18n="advanced">ADVANCED</span>
                     <label class="toggle-switch">
                         <input type="checkbox" id="settingsAdvancedToggle">
                         <span class="toggle-slider"></span>
@@ -1049,12 +1085,13 @@
                 </div>
                 <hr class="settings-divider">
                 <button class="settings-btn pixel-border-thin" id="settingsThemeBtn">THEME: LIGHT</button>
-                <button class="settings-btn pixel-border-thin" id="settingsExportBtn">EXPORT DATA</button>
-                <button class="settings-btn pixel-border-thin" id="settingsImportBtn">IMPORT DATA</button>
-                <button class="settings-btn pixel-border-thin" id="settingsImageBtn">EXPORT HEATMAP</button>
+                <button class="settings-btn pixel-border-thin" id="settingsLangBtn">LANG: EN</button>
+                <button class="settings-btn pixel-border-thin" id="settingsExportBtn" data-i18n="exportData">EXPORT DATA</button>
+                <button class="settings-btn pixel-border-thin" id="settingsImportBtn" data-i18n="importData">IMPORT DATA</button>
+                <button class="settings-btn pixel-border-thin" id="settingsImageBtn" data-i18n="exportHeatmap">EXPORT HEATMAP</button>
             </div>
             <div class="modal-buttons" style="margin-top: 20px;">
-                <button class="modal-btn pixel-border-thin" id="settingsClose">CLOSE</button>
+                <button class="modal-btn pixel-border-thin" id="settingsClose" data-i18n="close">CLOSE</button>
             </div>
         </div>
     </div>
@@ -1070,20 +1107,20 @@
         <div class="timer-section">
             <!-- Mode Selection -->
             <div class="mode-selection">
-                <button class="mode-btn pixel-border active" id="mode25" aria-label="25분 작업 5분 휴식">
+                <button class="mode-btn pixel-border active" id="mode25">
                     25 / 5
                 </button>
-                <button class="mode-btn pixel-border" id="mode50" aria-label="50분 작업 10분 휴식">
+                <button class="mode-btn pixel-border" id="mode50">
                     50 / 10
                 </button>
-                <button class="mode-btn pixel-border advanced-only" id="modeCustom" aria-label="커스텀 타이머 설정">
+                <button class="mode-btn pixel-border advanced-only" id="modeCustom" data-i18n="custom">
                     CUSTOM
                 </button>
             </div>
 
             <!-- Timer -->
             <div class="timer-container pixel-border" id="timerContainer">
-                <div class="session-label" id="sessionLabel">WORK</div>
+                <div class="session-label" id="sessionLabel" data-i18n="work">WORK</div>
                 <div class="timer-display" id="timerDisplay" role="timer" aria-live="polite" aria-atomic="true">25:00</div>
                 <div class="progress-container pixel-border-thin">
                     <div class="progress-bar" id="progressBar" style="width: 100%"></div>
@@ -1092,20 +1129,20 @@
             </div>
 
             <!-- Daily Goal - Minimal (one line) -->
-            <div class="goal-line" id="goalLine" aria-label="일일 목표 설정">
-                DAILY: 0M / 2H
+            <div class="goal-line" id="goalLine">
+                <span data-i18n="daily">DAILY</span>: 0M / 2H
             </div>
 
             <!-- Controls -->
             <div class="controls">
-                <button class="btn pixel-border" id="startBtn" aria-label="타이머 시작">
+                <button class="btn pixel-border" id="startBtn" data-i18n="start">
                     START
                 </button>
                 <div class="advanced-controls" id="advancedControls">
-                    <button class="btn pixel-border" id="resetBtn" aria-label="타이머 리셋">
+                    <button class="btn pixel-border" id="resetBtn" data-i18n="reset">
                         RESET
                     </button>
-                    <button class="btn pixel-border" id="skipBtn" aria-label="세션 스킵">
+                    <button class="btn pixel-border" id="skipBtn" data-i18n="skip">
                         SKIP
                     </button>
                 </div>
@@ -1115,38 +1152,32 @@
         <!-- Heatmap Section -->
         <div class="heatmap-section pixel-border">
             <div class="heatmap-header">
-                <span class="heatmap-title">HISTORY</span>
+                <span class="heatmap-title" data-i18n="history">HISTORY</span>
                 <div class="heatmap-stats-inline">
-                    <span id="statStreak">STREAK: 0</span>
+                    <span id="statStreak"><span data-i18n="streak">STREAK</span>: 0</span>
                     <span id="statTime">0H 0M</span>
                     <span id="statPeak"></span>
                 </div>
             </div>
 
             <div class="heatmap-container" id="heatmapContainer">
-                <!-- Y축: 시간 라벨 -->
                 <div class="heatmap-hours" id="heatmapHours"></div>
-
-                <!-- 그리드 영역 -->
                 <div class="heatmap-grid-wrapper">
-                    <!-- X축: 날짜 라벨 -->
                     <div class="heatmap-dates" id="heatmapDates"></div>
-                    <!-- 메인 그리드 -->
                     <div class="heatmap-grid" id="heatmapGrid"></div>
-                    <!-- 아래: 일별 총 시간 -->
                     <div class="heatmap-times" id="heatmapTimes"></div>
                 </div>
             </div>
 
             <div class="heatmap-stats">
-                <div class="total-sessions" id="totalSessions">0 SESSIONS</div>
+                <div class="total-sessions" id="totalSessions">0 <span data-i18n="sessions">SESSIONS</span></div>
                 <div class="heatmap-legend">
-                    <span>LESS</span>
+                    <span data-i18n="less">LESS</span>
                     <div class="legend-cell l1"></div>
                     <div class="legend-cell l2"></div>
                     <div class="legend-cell l3"></div>
                     <div class="legend-cell l4"></div>
-                    <span>MORE</span>
+                    <span data-i18n="more">MORE</span>
                 </div>
             </div>
         </div>
@@ -1154,12 +1185,265 @@
 
     <!-- Footer Controls -->
     <div class="footer-controls">
-        <button class="footer-btn" id="settingsBtn" aria-label="설정">SETTINGS</button>
+        <button class="footer-btn" id="settingsBtn" data-i18n="settings">SETTINGS</button>
     </div>
 
     <script>
     (function() {
         'use strict';
+
+        // ==================== I18N (TRANSLATIONS) ====================
+        const i18n = {
+            en: {
+                // Header
+                title: 'POMODORO',
+                // Timer
+                work: 'WORK',
+                break: 'BREAK',
+                start: 'START',
+                pause: 'PAUSE',
+                reset: 'RESET',
+                skip: 'SKIP',
+                custom: 'CUSTOM',
+                // Goal
+                daily: 'DAILY',
+                // Heatmap
+                history: 'HISTORY',
+                streak: 'STREAK',
+                sessions: 'SESSIONS',
+                less: 'LESS',
+                more: 'MORE',
+                noData: 'NO DATA YET',
+                noDataShort: 'NO DATA',
+                studied: 'STUDIED',
+                noSessions: 'NO SESSIONS',
+                // Settings
+                settings: 'SETTINGS',
+                notify: 'NOTIFY',
+                mute: 'MUTE',
+                advanced: 'ADVANCED',
+                theme: 'THEME',
+                language: 'LANGUAGE',
+                exportData: 'EXPORT DATA',
+                importData: 'IMPORT DATA',
+                exportHeatmap: 'EXPORT HEATMAP',
+                close: 'CLOSE',
+                // Modals
+                dailyGoal: 'DAILY GOAL',
+                targetMinutes: 'TARGET (MINUTES)',
+                cancel: 'CANCEL',
+                save: 'SAVE',
+                customTimer: 'CUSTOM TIMER',
+                workMinutes: 'WORK (MIN)',
+                breakMinutes: 'BREAK (MIN)',
+                focusRating: 'FOCUS RATING',
+                quote: 'QUOTE',
+                yourQuote: 'YOUR QUOTE',
+                // TTS
+                ttsWorkComplete: 'Work complete! Time for a break.',
+                ttsBreakComplete: 'Break over! Ready to focus.',
+                // Status
+                saving: 'SAVING...',
+                saved: 'SAVED',
+                capturing: 'CAPTURING...',
+                exported: 'EXPORTED',
+                error: 'ERROR',
+                // Notifications
+                notifyWorkComplete: 'Work Complete!',
+                notifyBreakComplete: 'Break Over!',
+                notifyWorkBody: 'Time for a break!',
+                notifyBreakBody: 'Ready to focus!',
+                // Confirm dialogs
+                resetTitle: 'RESET?',
+                resetMessage: 'Current progress will be lost.',
+                resetConfirm: 'RESET',
+                skipWorkTitle: 'SKIP WORK?',
+                skipBreakTitle: 'SKIP BREAK?',
+                skipMessage: 'Move to next session.',
+                skipConfirm: 'SKIP',
+                changeModeTitle: 'CHANGE MODE?',
+                changeModeMessage: 'Timer will be reset.',
+                changeModeConfirm: 'CHANGE',
+                applyCustomTitle: 'APPLY CUSTOM?',
+                applyCustomMessage: 'Timer will be reset.',
+                applyCustomConfirm: 'APPLY',
+                // Session delete
+                deleteTitle: 'DELETE?',
+                deleteMessage: 'This session will be removed.',
+                deleteConfirm: 'DELETE',
+                // Import
+                importTitle: 'IMPORT DATA?',
+                importMessage: 'This will overwrite current data.',
+                importConfirm: 'IMPORT',
+                invalidFile: 'Invalid file format'
+            },
+            ko: {
+                // Header
+                title: '뽀모도로',
+                // Timer
+                work: '작업',
+                break: '휴식',
+                start: '시작',
+                pause: '일시정지',
+                reset: '리셋',
+                skip: '스킵',
+                custom: '커스텀',
+                // Goal
+                daily: '오늘',
+                // Heatmap
+                history: '기록',
+                streak: '연속',
+                sessions: '세션',
+                less: '적음',
+                more: '많음',
+                noData: '데이터 없음',
+                noDataShort: '데이터 없음',
+                studied: '공부',
+                noSessions: '세션 없음',
+                // Settings
+                settings: '설정',
+                notify: '알림',
+                mute: '음소거',
+                advanced: '고급',
+                theme: '테마',
+                language: '언어',
+                exportData: '데이터 내보내기',
+                importData: '데이터 가져오기',
+                exportHeatmap: '히트맵 내보내기',
+                close: '닫기',
+                // Modals
+                dailyGoal: '일일 목표',
+                targetMinutes: '목표 (분)',
+                cancel: '취소',
+                save: '저장',
+                customTimer: '커스텀 타이머',
+                workMinutes: '작업 (분)',
+                breakMinutes: '휴식 (분)',
+                focusRating: '집중도 평가',
+                quote: '문구',
+                yourQuote: '나만의 문구',
+                // TTS
+                ttsWorkComplete: '작업 완료! 휴식 시간입니다.',
+                ttsBreakComplete: '휴식 끝! 집중할 시간입니다.',
+                // Status
+                saving: '저장 중...',
+                saved: '저장됨',
+                capturing: '캡처 중...',
+                exported: '내보내기 완료',
+                error: '오류',
+                // Notifications
+                notifyWorkComplete: '작업 완료!',
+                notifyBreakComplete: '휴식 끝!',
+                notifyWorkBody: '휴식 시간입니다!',
+                notifyBreakBody: '집중할 시간입니다!',
+                // Confirm dialogs
+                resetTitle: '리셋?',
+                resetMessage: '현재 진행 상황이 사라집니다.',
+                resetConfirm: '리셋',
+                skipWorkTitle: '작업 스킵?',
+                skipBreakTitle: '휴식 스킵?',
+                skipMessage: '다음 세션으로 이동합니다.',
+                skipConfirm: '스킵',
+                changeModeTitle: '모드 변경?',
+                changeModeMessage: '타이머가 리셋됩니다.',
+                changeModeConfirm: '변경',
+                applyCustomTitle: '커스텀 적용?',
+                applyCustomMessage: '타이머가 리셋됩니다.',
+                applyCustomConfirm: '적용',
+                // Session delete
+                deleteTitle: '삭제?',
+                deleteMessage: '이 세션이 삭제됩니다.',
+                deleteConfirm: '삭제',
+                // Import
+                importTitle: '데이터 가져오기?',
+                importMessage: '현재 데이터를 덮어씁니다.',
+                importConfirm: '가져오기',
+                invalidFile: '잘못된 파일 형식입니다'
+            },
+            ja: {
+                // Header
+                title: 'ポモドーロ',
+                // Timer
+                work: '作業',
+                break: '休憩',
+                start: 'スタート',
+                pause: '一時停止',
+                reset: 'リセット',
+                skip: 'スキップ',
+                custom: 'カスタム',
+                // Goal
+                daily: '今日',
+                // Heatmap
+                history: '履歴',
+                streak: '連続',
+                sessions: 'セッション',
+                less: '少',
+                more: '多',
+                noData: 'データなし',
+                noDataShort: 'データなし',
+                studied: '学習',
+                noSessions: 'セッションなし',
+                // Settings
+                settings: '設定',
+                notify: '通知',
+                mute: 'ミュート',
+                advanced: '詳細',
+                theme: 'テーマ',
+                language: '言語',
+                exportData: 'データ出力',
+                importData: 'データ入力',
+                exportHeatmap: 'ヒートマップ出力',
+                close: '閉じる',
+                // Modals
+                dailyGoal: '日標',
+                targetMinutes: '目標 (分)',
+                cancel: 'キャンセル',
+                save: '保存',
+                customTimer: 'カスタムタイマー',
+                workMinutes: '作業 (分)',
+                breakMinutes: '休憩 (分)',
+                focusRating: '集中度評価',
+                quote: '引用',
+                yourQuote: 'あなたの言葉',
+                // TTS
+                ttsWorkComplete: '作業完了！休憩時間です。',
+                ttsBreakComplete: '休憩終了！集中する時間です。',
+                // Status
+                saving: '保存中...',
+                saved: '保存済',
+                capturing: 'キャプチャ中...',
+                exported: '出力完了',
+                error: 'エラー',
+                // Notifications
+                notifyWorkComplete: '作業完了！',
+                notifyBreakComplete: '休憩終了！',
+                notifyWorkBody: '休憩時間です！',
+                notifyBreakBody: '集中する時間です！',
+                // Confirm dialogs
+                resetTitle: 'リセット？',
+                resetMessage: '現在の進捗が失われます。',
+                resetConfirm: 'リセット',
+                skipWorkTitle: '作業スキップ？',
+                skipBreakTitle: '休憩スキップ？',
+                skipMessage: '次のセッションに移動します。',
+                skipConfirm: 'スキップ',
+                changeModeTitle: 'モード変更？',
+                changeModeMessage: 'タイマーがリセットされます。',
+                changeModeConfirm: '変更',
+                applyCustomTitle: 'カスタム適用？',
+                applyCustomMessage: 'タイマーがリセットされます。',
+                applyCustomConfirm: '適用',
+                // Session delete
+                deleteTitle: '削除？',
+                deleteMessage: 'このセッションが削除されます。',
+                deleteConfirm: '削除',
+                // Import
+                importTitle: 'データをインポート？',
+                importMessage: '現在のデータが上書きされます。',
+                importConfirm: 'インポート',
+                invalidFile: '無効なファイル形式です'
+            }
+        };
 
         // ==================== STORAGE MODULE ====================
         const Storage = {
@@ -1303,6 +1587,22 @@
                 } catch (error) {
                     console.error('Failed to save theme:', error);
                 }
+            },
+
+            loadLanguage() {
+                try {
+                    return localStorage.getItem('pomodoroLang') || 'en';
+                } catch (error) {
+                    return 'en';
+                }
+            },
+
+            saveLanguage(lang) {
+                try {
+                    localStorage.setItem('pomodoroLang', lang);
+                } catch (error) {
+                    console.error('Failed to save language:', error);
+                }
             }
         };
 
@@ -1327,6 +1627,7 @@
                     settingsMuteToggle: document.getElementById('settingsMuteToggle'),
                     settingsAdvancedToggle: document.getElementById('settingsAdvancedToggle'),
                     settingsThemeBtn: document.getElementById('settingsThemeBtn'),
+                    settingsLangBtn: document.getElementById('settingsLangBtn'),
                     settingsExportBtn: document.getElementById('settingsExportBtn'),
                     settingsImportBtn: document.getElementById('settingsImportBtn'),
                     settingsImageBtn: document.getElementById('settingsImageBtn'),
@@ -1373,17 +1674,17 @@
 
             showSaveIndicator() {
                 this.elements.statusDot.classList.add('saving');
-                this.elements.statusText.textContent = 'SAVING...';
+                this.elements.statusText.textContent = Language.t('saving');
                 setTimeout(() => {
                     this.elements.statusDot.classList.remove('saving');
-                    this.elements.statusText.textContent = 'SAVED';
+                    this.elements.statusText.textContent = Language.t('saved');
                 }, 500);
             },
 
             showErrorIndicator() {
-                this.elements.statusText.textContent = 'ERROR';
+                this.elements.statusText.textContent = Language.t('error');
                 setTimeout(() => {
-                    this.elements.statusText.textContent = 'SAVED';
+                    this.elements.statusText.textContent = Language.t('saved');
                 }, 2000);
             },
 
@@ -1437,10 +1738,10 @@
             updateSessionLabel() {
                 if (Timer.state.isWorkSession) {
                     const quote = Quote.get();
-                    this.elements.sessionLabel.textContent = quote || 'WORK';
+                    this.elements.sessionLabel.textContent = quote || Language.t('work');
                     this.elements.sessionLabel.classList.remove('break');
                 } else {
-                    this.elements.sessionLabel.textContent = 'BREAK';
+                    this.elements.sessionLabel.textContent = Language.t('break');
                     this.elements.sessionLabel.classList.add('break');
                 }
             },
@@ -1449,7 +1750,7 @@
                 const minutes = Math.floor(Timer.state.timeRemaining / 60);
                 const seconds = Timer.state.timeRemaining % 60;
                 const time = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                const session = Timer.state.isWorkSession ? 'WORK' : 'BREAK';
+                const session = Timer.state.isWorkSession ? Language.t('work').toUpperCase() : Language.t('break').toUpperCase();
                 document.title = `${time} - ${session}`;
             },
 
@@ -1525,7 +1826,7 @@
                     this.state.sessionStartTime = Date.now();
                 }
 
-                UI.elements.startBtn.textContent = 'PAUSE';
+                UI.elements.startBtn.textContent = Language.t('pause');
                 UI.elements.startBtn.classList.add('active');
                 UI.elements.timerDisplay.classList.remove('paused');
 
@@ -1566,7 +1867,7 @@
 
             pause() {
                 this.state.isRunning = false;
-                UI.elements.startBtn.textContent = 'START';
+                UI.elements.startBtn.textContent = Language.t('start');
                 UI.elements.startBtn.classList.remove('active');
                 UI.elements.timerDisplay.classList.add('paused');
                 clearInterval(this.state.intervalId);
@@ -1582,9 +1883,9 @@
                 const hasProgress = this.state.timeRemaining < this.state.totalTime;
                 if (this.state.isRunning || hasProgress) {
                     const confirmed = await UI.showConfirm(
-                        'RESET?',
-                        'Current progress will be lost.',
-                        'RESET'
+                        Language.t('resetTitle'),
+                        Language.t('resetMessage'),
+                        Language.t('resetConfirm')
                     );
                     if (!confirmed) return;
                 }
@@ -1619,11 +1920,11 @@
             },
 
             async skip() {
-                const sessionType = this.state.isWorkSession ? 'WORK' : 'BREAK';
+                const skipTitle = this.state.isWorkSession ? Language.t('skipWorkTitle') : Language.t('skipBreakTitle');
                 const confirmed = await UI.showConfirm(
-                    `SKIP ${sessionType}?`,
-                    'Move to next session.',
-                    'SKIP'
+                    skipTitle,
+                    Language.t('skipMessage'),
+                    Language.t('skipConfirm')
                 );
                 if (!confirmed) return;
                 this.complete();
@@ -1682,9 +1983,9 @@
 
                 if (this.state.isRunning || hasProgress) {
                     const confirmed = await UI.showConfirm(
-                        'CHANGE MODE?',
-                        'Timer will be reset.',
-                        'CHANGE'
+                        Language.t('changeModeTitle'),
+                        Language.t('changeModeMessage'),
+                        Language.t('changeModeConfirm')
                     );
                     if (!confirmed) return;
                 }
@@ -1827,15 +2128,16 @@
                 const currentM = current % 60;
                 const targetH = Math.floor(target / 60);
                 const targetM = target % 60;
+                const dailyLabel = Language.t('daily').toUpperCase();
 
                 let text;
                 if (isCompleted) {
-                    text = `DAILY: ${currentH}H ${currentM}M ✓`;
+                    text = `${dailyLabel}: ${currentH}H ${currentM}M ✓`;
                     UI.elements.goalLine.classList.add('completed');
                 } else {
                     const currentStr = currentH > 0 ? `${currentH}H ${currentM}M` : `${currentM}M`;
                     const targetStr = targetH > 0 ? (targetM > 0 ? `${targetH}H ${targetM}M` : `${targetH}H`) : `${targetM}M`;
-                    text = `DAILY: ${currentStr} / ${targetStr}`;
+                    text = `${dailyLabel}: ${currentStr} / ${targetStr}`;
                     UI.elements.goalLine.classList.remove('completed');
                 }
 
@@ -1935,9 +2237,9 @@
 
                 if (dates.length === 0) {
                     UI.elements.heatmapDates.innerHTML = '';
-                    UI.elements.heatmapGrid.innerHTML = '<div class="heatmap-empty">NO DATA YET</div>';
+                    UI.elements.heatmapGrid.innerHTML = `<div class="heatmap-empty">${Language.t('noData')}</div>`;
                     UI.elements.heatmapTimes.innerHTML = '';
-                    UI.elements.totalSessions.textContent = '0 SESSIONS';
+                    UI.elements.totalSessions.innerHTML = `0 <span>${Language.t('sessions')}</span>`;
                     Stats.update();
                     return;
                 }
@@ -2083,7 +2385,7 @@
                     UI.elements.heatmapTimes.appendChild(label);
                 });
 
-                UI.elements.totalSessions.textContent = `${totalSessions} SESSIONS`;
+                UI.elements.totalSessions.innerHTML = `${totalSessions} <span>${Language.t('sessions')}</span>`;
                 Stats.update();
             },
 
@@ -2113,7 +2415,7 @@
 
                 UI.elements.heatmapTooltip.innerHTML = `
                     ${month}/${day} ${hourNum.toString().padStart(2, '0')}:00<br>
-                    ${minNum > 0 ? minNum + 'M STUDIED' : 'NO DATA'}${focusDisplay}
+                    ${minNum > 0 ? minNum + 'M ' + Language.t('studied') : Language.t('noDataShort')}${focusDisplay}
                 `;
                 UI.elements.heatmapTooltip.classList.add('show');
             },
@@ -2183,9 +2485,9 @@
 
                     if (Timer.state.isRunning || Timer.state.timeRemaining < Timer.state.totalTime) {
                         const confirmed = await UI.showConfirm(
-                            'APPLY CUSTOM?',
-                            'Timer will be reset.',
-                            'APPLY'
+                            Language.t('applyCustomTitle'),
+                            Language.t('applyCustomMessage'),
+                            Language.t('applyCustomConfirm')
                         );
                         if (confirmed) {
                             Timer.applyMode('custom');
@@ -2211,10 +2513,10 @@
                 const daySessions = sessions[dateKey] || [];
 
                 const [year, month, day] = dateKey.split('-');
-                UI.elements.sessionModalTitle.textContent = `${month}/${day} SESSIONS`;
+                UI.elements.sessionModalTitle.textContent = `${month}/${day} ${Language.t('sessions')}`;
 
                 if (daySessions.length === 0) {
-                    UI.elements.sessionList.innerHTML = '<div class="session-empty">NO SESSIONS</div>';
+                    UI.elements.sessionList.innerHTML = `<div class="session-empty">${Language.t('noSessions')}</div>`;
                 } else {
                     UI.elements.sessionList.innerHTML = daySessions.map((session, index) => {
                         // 집중도 표시
@@ -2257,9 +2559,9 @@
 
             async deleteSession(index) {
                 const confirmed = await UI.showConfirm(
-                    'DELETE?',
-                    'This session will be removed.',
-                    'DELETE'
+                    Language.t('deleteTitle'),
+                    Language.t('deleteMessage'),
+                    Language.t('deleteConfirm')
                 );
 
                 if (confirmed) {
@@ -2336,6 +2638,83 @@
             }
         };
 
+        // ==================== LANGUAGE MODULE ====================
+        const Language = {
+            languages: ['en', 'ko', 'ja'],
+            languageNames: { en: 'EN', ko: '한국어', ja: '日本語' },
+            currentIndex: 0,
+
+            init() {
+                const savedLang = Storage.loadLanguage();
+                this.currentIndex = this.languages.indexOf(savedLang);
+                if (this.currentIndex === -1) this.currentIndex = 0;
+
+                this.applyLanguage(this.languages[this.currentIndex]);
+            },
+
+            t(key) {
+                const lang = this.languages[this.currentIndex];
+                return i18n[lang][key] || i18n.en[key] || key;
+            },
+
+            applyLanguage(lang) {
+                // Update all elements with data-i18n attribute
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    el.textContent = i18n[lang][key] || i18n.en[key] || el.textContent;
+                });
+
+                // Update document lang attribute
+                document.documentElement.lang = lang;
+
+                // Update font class for language-specific fonts (both html and body)
+                document.documentElement.classList.remove('lang-en', 'lang-ko', 'lang-ja');
+                document.documentElement.classList.add(`lang-${lang}`);
+                document.body.classList.remove('lang-en', 'lang-ko', 'lang-ja');
+                document.body.classList.add(`lang-${lang}`);
+
+                Storage.saveLanguage(lang);
+
+                // Update dynamic elements
+                if (typeof Goals !== 'undefined' && Goals.updateProgress) {
+                    Goals.updateProgress();
+                }
+                if (typeof UI !== 'undefined' && UI.updateSessionLabel) {
+                    UI.updateSessionLabel();
+                }
+                // Update start button text
+                if (typeof UI !== 'undefined' && UI.elements && UI.elements.startBtn) {
+                    if (typeof Timer !== 'undefined' && Timer.state.isRunning) {
+                        UI.elements.startBtn.textContent = this.t('pause');
+                    } else {
+                        UI.elements.startBtn.textContent = this.t('start');
+                    }
+                }
+                // Update document title
+                if (typeof Timer !== 'undefined' && !Timer.state.isRunning) {
+                    document.title = 'POMODORO';
+                }
+                // Update settings buttons if available
+                if (typeof Settings !== 'undefined') {
+                    if (Settings.updateThemeButton) Settings.updateThemeButton();
+                    if (Settings.updateLangButton) Settings.updateLangButton();
+                }
+                // Update heatmap with new language
+                if (typeof Heatmap !== 'undefined' && Heatmap.update) {
+                    Heatmap.update();
+                }
+            },
+
+            toggle() {
+                this.currentIndex = (this.currentIndex + 1) % this.languages.length;
+                this.applyLanguage(this.languages[this.currentIndex]);
+            },
+
+            getCurrentName() {
+                return this.languageNames[this.languages[this.currentIndex]];
+            }
+        };
+
         // ==================== SETTINGS MODULE ====================
         const Settings = {
             advancedEnabled: false,
@@ -2372,6 +2751,12 @@
                     this.updateThemeButton();
                 });
 
+                // Language button
+                UI.elements.settingsLangBtn.addEventListener('click', () => {
+                    Language.toggle();
+                    this.updateLangButton();
+                });
+
                 // Data buttons
                 UI.elements.settingsExportBtn.addEventListener('click', () => {
                     DataManager.export();
@@ -2388,6 +2773,7 @@
             show() {
                 this.updateToggleStates();
                 this.updateThemeButton();
+                this.updateLangButton();
                 UI.elements.settingsModal.classList.add('show');
             },
 
@@ -2409,7 +2795,11 @@
 
             updateThemeButton() {
                 const currentTheme = Theme.themes[Theme.currentIndex];
-                UI.elements.settingsThemeBtn.textContent = `THEME: ${currentTheme.toUpperCase()}`;
+                UI.elements.settingsThemeBtn.textContent = `${Language.t('theme')}: ${currentTheme.toUpperCase()}`;
+            },
+
+            updateLangButton() {
+                UI.elements.settingsLangBtn.textContent = `${Language.t('language')}: ${Language.getCurrentName()}`;
             },
 
             updateAdvancedUI() {
@@ -2485,8 +2875,8 @@
 
             show() {
                 if ('Notification' in window && window.Notification.permission === 'granted') {
-                    const title = Timer.state.isWorkSession ? 'Work Complete!' : 'Break Over!';
-                    const body = Timer.state.isWorkSession ? 'Time for a break!' : 'Ready to focus!';
+                    const title = Timer.state.isWorkSession ? Language.t('notifyWorkComplete') : Language.t('notifyBreakComplete');
+                    const body = Timer.state.isWorkSession ? Language.t('notifyWorkBody') : Language.t('notifyBreakBody');
                     new window.Notification(title, { body });
                 }
             }
@@ -2624,7 +3014,7 @@
                 UI.elements.heatmapTooltip.classList.remove('show');
 
                 try {
-                    UI.elements.statusText.textContent = 'CAPTURING...';
+                    UI.elements.statusText.textContent = Language.t('capturing');
                     UI.elements.statusDot.classList.add('saving');
 
                     // Get background color from current theme
@@ -2645,16 +3035,16 @@
                     link.click();
 
                     UI.elements.statusDot.classList.remove('saving');
-                    UI.elements.statusText.textContent = 'EXPORTED';
+                    UI.elements.statusText.textContent = Language.t('exported');
                     setTimeout(() => {
-                        UI.elements.statusText.textContent = 'SAVED';
+                        UI.elements.statusText.textContent = Language.t('saved');
                     }, 2000);
                 } catch (error) {
                     console.error('Failed to export image:', error);
                     UI.elements.statusDot.classList.remove('saving');
-                    UI.elements.statusText.textContent = 'ERROR';
+                    UI.elements.statusText.textContent = Language.t('error');
                     setTimeout(() => {
-                        UI.elements.statusText.textContent = 'SAVED';
+                        UI.elements.statusText.textContent = Language.t('saved');
                     }, 2000);
                 }
             },
@@ -2673,9 +3063,9 @@
                         const data = JSON.parse(text);
 
                         const confirmed = await UI.showConfirm(
-                            'IMPORT DATA?',
-                            'This will overwrite current data.',
-                            'IMPORT'
+                            Language.t('importTitle'),
+                            Language.t('importMessage'),
+                            Language.t('importConfirm')
                         );
 
                         if (!confirmed) return;
@@ -2688,7 +3078,7 @@
 
                         location.reload();
                     } catch (error) {
-                        alert('Invalid file format');
+                        alert(Language.t('invalidFile'));
                     }
                 };
 
@@ -2803,6 +3193,7 @@
             Timer.init();
             Quote.init();
             Theme.init();
+            Language.init();
             Settings.init();
             Notification.init();
             Modals.init();
