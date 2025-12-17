@@ -18,6 +18,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -1017,6 +1018,7 @@
     <div class="data-controls advanced-only">
         <button class="data-btn" id="exportBtn">EXPORT DATA</button>
         <button class="data-btn" id="importBtn">IMPORT DATA</button>
+        <button class="data-btn" id="exportImageBtn">EXPORT IMAGE</button>
     </div>
 
     <script>
@@ -1225,6 +1227,7 @@
                     focusModal: document.getElementById('focusModal'),
                     exportBtn: document.getElementById('exportBtn'),
                     importBtn: document.getElementById('importBtn'),
+                    exportImageBtn: document.getElementById('exportImageBtn'),
                     muteBtn: document.getElementById('muteBtn')
                 };
             },
@@ -2428,6 +2431,49 @@
                 URL.revokeObjectURL(url);
             },
 
+            async exportImage() {
+                const heatmapSection = document.querySelector('.heatmap-section');
+                if (!heatmapSection) return;
+
+                // Hide tooltip before capture
+                UI.elements.heatmapTooltip.classList.remove('show');
+
+                try {
+                    UI.elements.statusText.textContent = 'CAPTURING...';
+                    UI.elements.statusDot.classList.add('saving');
+
+                    // Get computed styles to determine colors
+                    const isDark = document.body.classList.contains('dark');
+                    const bgColor = isDark ? '#000000' : '#ffffff';
+
+                    const canvas = await html2canvas(heatmapSection, {
+                        backgroundColor: bgColor,
+                        scale: 2, // Higher resolution
+                        logging: false,
+                        useCORS: true
+                    });
+
+                    // Convert to image and download
+                    const link = document.createElement('a');
+                    link.download = `pomodoro-heatmap-${new Date().toISOString().split('T')[0]}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    UI.elements.statusDot.classList.remove('saving');
+                    UI.elements.statusText.textContent = 'EXPORTED';
+                    setTimeout(() => {
+                        UI.elements.statusText.textContent = 'SAVED';
+                    }, 2000);
+                } catch (error) {
+                    console.error('Failed to export image:', error);
+                    UI.elements.statusDot.classList.remove('saving');
+                    UI.elements.statusText.textContent = 'ERROR';
+                    setTimeout(() => {
+                        UI.elements.statusText.textContent = 'SAVED';
+                    }, 2000);
+                }
+            },
+
             async import() {
                 const input = document.createElement('input');
                 input.type = 'file';
@@ -2526,6 +2572,7 @@
 
             UI.elements.exportBtn.addEventListener('click', () => DataManager.export());
             UI.elements.importBtn.addEventListener('click', () => DataManager.import());
+            UI.elements.exportImageBtn.addEventListener('click', () => DataManager.exportImage());
 
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
