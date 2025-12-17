@@ -166,11 +166,16 @@
             width: 100%;
             max-width: 800px;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
         }
 
         .title {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
+            font-size: 2rem;
+            letter-spacing: 4px;
+            padding: 10px 20px;
+            background-color: var(--bg);
+            border: 6px solid var(--primary);
         }
 
         /* Main Layout */
@@ -181,6 +186,8 @@
             align-items: center;
             width: 100%;
             max-width: 500px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Timer Section */
@@ -958,9 +965,84 @@
             opacity: 0.3;
             margin: 8px 0;
         }
+
+        /* Background Animation Container */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* Full screen pixel art background */
+        .bg-animation .pixel-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            /* Use SVG duotone filter for exact 2-color effect */
+            filter: url(#duotone-filter);
+        }
+
+        /* Scanlines overlay for retro effect */
+        .bg-animation.has-scanlines::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03),
+                rgba(0, 0, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
     </style>
 </head>
 <body class="lang-en">
+    <!-- SVG Filter for 1-bit duotone effect -->
+    <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+        <defs>
+            <filter id="duotone-filter" color-interpolation-filters="sRGB">
+                <!-- Convert to grayscale -->
+                <feColorMatrix type="matrix" values="0.33 0.33 0.33 0 0
+                                                      0.33 0.33 0.33 0 0
+                                                      0.33 0.33 0.33 0 0
+                                                      0    0    0    1 0" result="gray"/>
+                <!-- Threshold: convert to pure black/white -->
+                <feComponentTransfer result="threshold">
+                    <feFuncR type="discrete" tableValues="0 1"/>
+                    <feFuncG type="discrete" tableValues="0 1"/>
+                    <feFuncB type="discrete" tableValues="0 1"/>
+                </feComponentTransfer>
+                <!-- Map to theme colors: black->bg, white->primary -->
+                <feColorMatrix id="duotone-colors" type="matrix"
+                    values="0 0 0 0 0
+                            0 0 0 0 0
+                            0 0 0 0 0
+                            0 0 0 1 0" result="duotone"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Background Animation Container -->
+    <div class="bg-animation" id="bgAnimation"></div>
+
     <!-- Tooltip -->
     <div class="heatmap-tooltip" id="heatmapTooltip"></div>
 
@@ -1086,6 +1168,7 @@
                 <hr class="settings-divider">
                 <button class="settings-btn pixel-border-thin" id="settingsThemeBtn">THEME: LIGHT</button>
                 <button class="settings-btn pixel-border-thin" id="settingsLangBtn">LANG: EN</button>
+                <button class="settings-btn pixel-border-thin" id="settingsBgBtn">BG: NONE</button>
                 <button class="settings-btn pixel-border-thin" id="settingsExportBtn" data-i18n="exportData">EXPORT DATA</button>
                 <button class="settings-btn pixel-border-thin" id="settingsImportBtn" data-i18n="importData">IMPORT DATA</button>
                 <button class="settings-btn pixel-border-thin" id="settingsImageBtn" data-i18n="exportHeatmap">EXPORT HEATMAP</button>
@@ -1098,7 +1181,7 @@
 
     <!-- Header -->
     <div class="header">
-        <h1 class="title">POMODORO</h1>
+        <h1 class="title" data-i18n="title">POMODORO</h1>
     </div>
 
     <!-- Main Container -->
@@ -1227,6 +1310,7 @@
                 exportData: 'EXPORT DATA',
                 importData: 'IMPORT DATA',
                 exportHeatmap: 'EXPORT HEATMAP',
+                background: 'BG',
                 close: 'CLOSE',
                 // Modals
                 dailyGoal: 'DAILY GOAL',
@@ -1279,7 +1363,7 @@
             },
             ko: {
                 // Header
-                title: '뽀모도로',
+                title: '포모도로',
                 // Timer
                 work: '작업',
                 break: '휴식',
@@ -1310,6 +1394,7 @@
                 exportData: '데이터 내보내기',
                 importData: '데이터 가져오기',
                 exportHeatmap: '히트맵 내보내기',
+                background: '배경',
                 close: '닫기',
                 // Modals
                 dailyGoal: '일일 목표',
@@ -1393,6 +1478,7 @@
                 exportData: 'データ出力',
                 importData: 'データ入力',
                 exportHeatmap: 'ヒートマップ出力',
+                background: '背景',
                 close: '閉じる',
                 // Modals
                 dailyGoal: '日標',
@@ -1628,9 +1714,11 @@
                     settingsAdvancedToggle: document.getElementById('settingsAdvancedToggle'),
                     settingsThemeBtn: document.getElementById('settingsThemeBtn'),
                     settingsLangBtn: document.getElementById('settingsLangBtn'),
+                    settingsBgBtn: document.getElementById('settingsBgBtn'),
                     settingsExportBtn: document.getElementById('settingsExportBtn'),
                     settingsImportBtn: document.getElementById('settingsImportBtn'),
                     settingsImageBtn: document.getElementById('settingsImageBtn'),
+                    bgAnimation: document.getElementById('bgAnimation'),
                     heatmapHours: document.getElementById('heatmapHours'),
                     heatmapDates: document.getElementById('heatmapDates'),
                     heatmapGrid: document.getElementById('heatmapGrid'),
@@ -1871,7 +1959,7 @@
                 UI.elements.startBtn.classList.remove('active');
                 UI.elements.timerDisplay.classList.add('paused');
                 clearInterval(this.state.intervalId);
-                document.title = 'POMODORO';
+                document.title = Language.t('title');
 
                 // Allow screen to turn off
                 PWA.releaseWakeLock();
@@ -2630,6 +2718,41 @@
                 }
 
                 Storage.saveTheme(theme);
+
+                // Update duotone filter colors
+                this.updateDuotoneFilter();
+            },
+
+            updateDuotoneFilter() {
+                // Get theme colors from CSS variables
+                const style = getComputedStyle(document.body);
+                const primary = style.getPropertyValue('--primary').trim();
+                const bg = style.getPropertyValue('--bg').trim();
+
+                // Convert hex to RGB (0-1 range)
+                const hexToRGB = (hex) => {
+                    const r = parseInt(hex.slice(1, 3), 16) / 255;
+                    const g = parseInt(hex.slice(3, 5), 16) / 255;
+                    const b = parseInt(hex.slice(5, 7), 16) / 255;
+                    return { r, g, b };
+                };
+
+                const pRGB = hexToRGB(primary);
+                const bRGB = hexToRGB(bg);
+
+                // Matrix maps: black(0)->bg, white(1)->primary
+                // After threshold, R=G=B, so only use first column for each row
+                const matrix = `
+                    ${pRGB.r - bRGB.r} 0 0 0 ${bRGB.r}
+                    0 ${pRGB.g - bRGB.g} 0 0 ${bRGB.g}
+                    0 0 ${pRGB.b - bRGB.b} 0 ${bRGB.b}
+                    0 0 0 1 0
+                `;
+
+                const filterEl = document.getElementById('duotone-colors');
+                if (filterEl) {
+                    filterEl.setAttribute('values', matrix);
+                }
             },
 
             toggle() {
@@ -2692,7 +2815,7 @@
                 }
                 // Update document title
                 if (typeof Timer !== 'undefined' && !Timer.state.isRunning) {
-                    document.title = 'POMODORO';
+                    document.title = Language.t('title');
                 }
                 // Update settings buttons if available
                 if (typeof Settings !== 'undefined') {
@@ -2712,6 +2835,74 @@
 
             getCurrentName() {
                 return this.languageNames[this.languages[this.currentIndex]];
+            }
+        };
+
+        // ==================== BACKGROUND ANIMATION MODULE ====================
+        const Background = {
+            // Pixel art GIF backgrounds - calm, looping ambient animations only
+            animations: [
+                { id: 'none', name: 'NONE', url: null },
+                // Calm city/night scenes
+                { id: 'city-night', name: 'CITY', url: 'https://media.giphy.com/media/A5ffIYwJoEpVcMOYiO/giphy.gif' },
+                { id: 'neon', name: 'NEON', url: 'https://media.giphy.com/media/RfnQuPrBYOzpdh8yrh/giphy.gif' },
+                { id: 'night-watch', name: 'NIGHT', url: 'https://media.giphy.com/media/26gseQpvoWpT8PfXO/giphy.gif' },
+                // Rain/weather - soothing loops
+                { id: 'rain-window', name: 'RAIN', url: 'https://media.giphy.com/media/W0d6nJlthOq88/giphy.gif' },
+                { id: 'cat-rain', name: 'CAT', url: 'https://media.giphy.com/media/RgZFvGuI4OxLjuSvRF/giphy.gif' },
+                { id: 'sad-rain', name: 'RAINY', url: 'https://media.giphy.com/media/fVUnEVLKi2CWqF2yxF/giphy.gif' },
+                { id: 'snow', name: 'SNOW', url: 'https://media.giphy.com/media/RO03L0GSZbRn2ml7m8/giphy.gif' },
+                // Nature/landscape - peaceful scenes
+                { id: 'landscape', name: 'LAND', url: 'https://media.giphy.com/media/TRebCjNbc4dIA/giphy.gif' },
+                { id: 'golden-forest', name: 'FOREST', url: 'https://media.giphy.com/media/3diu2dFNpV8AnozJ3V/giphy.gif' },
+                { id: 'stardew-pond', name: 'POND', url: 'https://media.giphy.com/media/FTsAPLaEaqJTG/giphy.gif' },
+                { id: 'aurora', name: 'AURORA', url: 'https://media.giphy.com/media/2KZ5e9Wp9G5lxk0D6n/giphy.gif' },
+                { id: 'ocean', name: 'OCEAN', url: 'https://media.giphy.com/media/l0MYQZ12nllXxp3yg/giphy.gif' },
+                // Cozy/ambient - lo-fi vibes
+                { id: 'campfire', name: 'FIRE', url: 'https://media.giphy.com/media/kC3s8IIO92ykrd7WDp/giphy.gif' },
+                { id: 'lofi-room', name: 'LOFI', url: 'https://media.giphy.com/media/xQ7NKUKR2qg0jQ5uwC/giphy.gif' },
+                // Space/stars - twinkling loops
+                { id: 'stars', name: 'STARS', url: 'https://media.giphy.com/media/l0IsIskyYz2lIf94Y/giphy.gif' },
+                { id: 'space', name: 'SPACE', url: 'https://media.giphy.com/media/j5mwjor5i5PGigmPH2/giphy.gif' }
+            ],
+            currentIndex: 0,
+
+            init() {
+                const saved = localStorage.getItem('pomodoroBg') || 'none';
+                this.currentIndex = this.animations.findIndex(a => a.id === saved);
+                if (this.currentIndex === -1) this.currentIndex = 0;
+                this.apply(this.animations[this.currentIndex]);
+            },
+
+            toggle() {
+                this.currentIndex = (this.currentIndex + 1) % this.animations.length;
+                const animation = this.animations[this.currentIndex];
+                localStorage.setItem('pomodoroBg', animation.id);
+                this.apply(animation);
+            },
+
+            apply(animation) {
+                const container = UI.elements.bgAnimation;
+                if (!container) return;
+
+                // Clear previous animation
+                container.innerHTML = '';
+                container.className = 'bg-animation';
+
+                if (animation.id === 'none' || !animation.url) return;
+
+                // Add scanlines overlay for retro effect
+                container.classList.add('has-scanlines');
+
+                // Create single full-screen background
+                const bg = document.createElement('div');
+                bg.className = 'pixel-bg';
+                bg.style.backgroundImage = `url('${animation.url}')`;
+                container.appendChild(bg);
+            },
+
+            getCurrentName() {
+                return this.animations[this.currentIndex].name;
             }
         };
 
@@ -2757,6 +2948,12 @@
                     this.updateLangButton();
                 });
 
+                // Background button
+                UI.elements.settingsBgBtn.addEventListener('click', () => {
+                    Background.toggle();
+                    this.updateBgButton();
+                });
+
                 // Data buttons
                 UI.elements.settingsExportBtn.addEventListener('click', () => {
                     DataManager.export();
@@ -2774,6 +2971,7 @@
                 this.updateToggleStates();
                 this.updateThemeButton();
                 this.updateLangButton();
+                this.updateBgButton();
                 UI.elements.settingsModal.classList.add('show');
             },
 
@@ -2800,6 +2998,10 @@
 
             updateLangButton() {
                 UI.elements.settingsLangBtn.textContent = `${Language.t('language')}: ${Language.getCurrentName()}`;
+            },
+
+            updateBgButton() {
+                UI.elements.settingsBgBtn.textContent = `${Language.t('background')}: ${Background.getCurrentName()}`;
             },
 
             updateAdvancedUI() {
@@ -3194,6 +3396,7 @@
             Quote.init();
             Theme.init();
             Language.init();
+            Background.init();
             Settings.init();
             Notification.init();
             Modals.init();
