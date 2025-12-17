@@ -41,6 +41,48 @@
             --primary: #ffffff;
         }
 
+        /* Sepia - Vintage paper feel */
+        .sepia {
+            --bg: #f4ecd8;
+            --primary: #5c4033;
+        }
+
+        /* Terminal - Classic green on black */
+        .terminal {
+            --bg: #0a0a0a;
+            --primary: #00ff00;
+        }
+
+        /* Ocean - Deep blue tones */
+        .ocean {
+            --bg: #0d1b2a;
+            --primary: #7ec8e3;
+        }
+
+        /* Sunset - Warm coral tones */
+        .sunset {
+            --bg: #2d1b2d;
+            --primary: #ff6b6b;
+        }
+
+        /* Lavender - Soft purple */
+        .lavender {
+            --bg: #1a1625;
+            --primary: #e0b0ff;
+        }
+
+        /* Mint - Fresh green */
+        .mint {
+            --bg: #f0fff4;
+            --primary: #2d6a4f;
+        }
+
+        /* Amber - Retro monitor */
+        .amber {
+            --bg: #1a1a0a;
+            --primary: #ffbf00;
+        }
+
         body {
             font-family: 'Press Start 2P', cursive;
             background-color: var(--bg);
@@ -601,7 +643,7 @@
             50% { opacity: 0.3; }
         }
 
-        /* Advanced controls (RESET/SKIP/CUSTOM) - hidden by default */
+        /* Advanced controls - hidden by default */
         .advanced-controls {
             display: none;
             gap: 20px;
@@ -666,7 +708,12 @@
             z-index: 1100;
         }
 
-        .dark .modal {
+        .dark .modal,
+        .terminal .modal,
+        .ocean .modal,
+        .sunset .modal,
+        .lavender .modal,
+        .amber .modal {
             background: rgba(255,255,255,0.15);
         }
 
@@ -788,31 +835,92 @@
             color: var(--bg);
         }
 
-        /* Data Export/Import */
-        .data-controls {
-            margin-top: 20px;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .data-controls.show {
+        /* Settings Modal */
+        .settings-options {
             display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
         }
 
-        .data-btn {
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .settings-label {
+            font-size: 0.5rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            border: 2px solid var(--primary);
+            transition: 0.2s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background: var(--primary);
+            transition: 0.2s;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            background: var(--bg);
+            transform: translateX(24px);
+        }
+
+        .settings-btn {
+            padding: 12px 20px;
+            font-size: 0.5rem;
+            font-family: inherit;
             background: var(--bg);
             color: var(--primary);
             border: none;
-            padding: 8px 12px;
-            font-family: inherit;
-            font-size: 0.35rem;
             cursor: pointer;
-            opacity: 0.4;
-            transition: opacity 0.2s;
+            transition: all 0.1s;
+            width: 100%;
         }
 
-        .data-btn:hover {
-            opacity: 0.8;
+        .settings-btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .settings-divider {
+            border: none;
+            border-top: 1px solid var(--primary);
+            opacity: 0.3;
+            margin: 8px 0;
         }
     </style>
 </head>
@@ -913,6 +1021,44 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
+            <h2>SETTINGS</h2>
+            <div class="settings-options">
+                <div class="settings-row">
+                    <span class="settings-label">NOTIFY</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingsNotifyToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label">MUTE</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingsMuteToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label">ADVANCED</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingsAdvancedToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <hr class="settings-divider">
+                <button class="settings-btn pixel-border-thin" id="settingsThemeBtn">THEME: LIGHT</button>
+                <button class="settings-btn pixel-border-thin" id="settingsExportBtn">EXPORT DATA</button>
+                <button class="settings-btn pixel-border-thin" id="settingsImportBtn">IMPORT DATA</button>
+                <button class="settings-btn pixel-border-thin" id="settingsImageBtn">EXPORT HEATMAP</button>
+            </div>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button class="modal-btn pixel-border-thin" id="settingsClose">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <div class="header">
         <h1 class="title">POMODORO</h1>
@@ -1008,17 +1154,7 @@
 
     <!-- Footer Controls -->
     <div class="footer-controls">
-        <button class="footer-btn" id="notificationBtn" aria-label="알림 설정">NOTIFY</button>
-        <button class="footer-btn" id="muteBtn" aria-label="음소거">MUTE</button>
-        <button class="footer-btn" id="themeBtn" aria-label="테마 변경">DARK</button>
-        <button class="footer-btn" id="advancedBtn" aria-label="고급 설정">ADVANCED</button>
-    </div>
-
-    <!-- Data Export/Import (Advanced only) -->
-    <div class="data-controls advanced-only">
-        <button class="data-btn" id="exportBtn">EXPORT DATA</button>
-        <button class="data-btn" id="importBtn">IMPORT DATA</button>
-        <button class="data-btn" id="exportImageBtn">EXPORT IMAGE</button>
+        <button class="footer-btn" id="settingsBtn" aria-label="설정">SETTINGS</button>
     </div>
 
     <script>
@@ -1182,11 +1318,18 @@
                     startBtn: document.getElementById('startBtn'),
                     resetBtn: document.getElementById('resetBtn'),
                     skipBtn: document.getElementById('skipBtn'),
-                    progressBar: document.getElementById('progressBar'),
-                    themeBtn: document.getElementById('themeBtn'),
-                    notificationBtn: document.getElementById('notificationBtn'),
-                    advancedBtn: document.getElementById('advancedBtn'),
                     advancedControls: document.getElementById('advancedControls'),
+                    progressBar: document.getElementById('progressBar'),
+                    settingsBtn: document.getElementById('settingsBtn'),
+                    settingsModal: document.getElementById('settingsModal'),
+                    settingsClose: document.getElementById('settingsClose'),
+                    settingsNotifyToggle: document.getElementById('settingsNotifyToggle'),
+                    settingsMuteToggle: document.getElementById('settingsMuteToggle'),
+                    settingsAdvancedToggle: document.getElementById('settingsAdvancedToggle'),
+                    settingsThemeBtn: document.getElementById('settingsThemeBtn'),
+                    settingsExportBtn: document.getElementById('settingsExportBtn'),
+                    settingsImportBtn: document.getElementById('settingsImportBtn'),
+                    settingsImageBtn: document.getElementById('settingsImageBtn'),
                     heatmapHours: document.getElementById('heatmapHours'),
                     heatmapDates: document.getElementById('heatmapDates'),
                     heatmapGrid: document.getElementById('heatmapGrid'),
@@ -1224,11 +1367,7 @@
                     quoteInput: document.getElementById('quoteInput'),
                     quoteSave: document.getElementById('quoteSave'),
                     quoteCancel: document.getElementById('quoteCancel'),
-                    focusModal: document.getElementById('focusModal'),
-                    exportBtn: document.getElementById('exportBtn'),
-                    importBtn: document.getElementById('importBtn'),
-                    exportImageBtn: document.getElementById('exportImageBtn'),
-                    muteBtn: document.getElementById('muteBtn')
+                    focusModal: document.getElementById('focusModal')
                 };
             },
 
@@ -2166,49 +2305,120 @@
 
         // ==================== THEME MODULE ====================
         const Theme = {
+            themes: ['light', 'dark', 'sepia', 'terminal', 'ocean', 'sunset', 'lavender', 'mint', 'amber'],
+            currentIndex: 0,
+
             init() {
-                const savedTheme = Storage.loadTheme();
-                if (savedTheme === 'dark') {
-                    document.body.classList.add('dark');
-                    UI.elements.themeBtn.textContent = 'LIGHT';
+                const savedTheme = Storage.loadTheme() || 'light';
+                this.currentIndex = this.themes.indexOf(savedTheme);
+                if (this.currentIndex === -1) this.currentIndex = 0;
+
+                this.applyTheme(this.themes[this.currentIndex]);
+            },
+
+            applyTheme(theme) {
+                // Remove all theme classes
+                this.themes.forEach(t => {
+                    if (t !== 'light') document.body.classList.remove(t);
+                });
+
+                // Apply new theme
+                if (theme !== 'light') {
+                    document.body.classList.add(theme);
                 }
 
-                UI.elements.themeBtn.addEventListener('click', () => this.toggle());
+                Storage.saveTheme(theme);
             },
 
             toggle() {
-                document.body.classList.toggle('dark');
-                const isDark = document.body.classList.contains('dark');
-                UI.elements.themeBtn.textContent = isDark ? 'LIGHT' : 'DARK';
-                Storage.saveTheme(isDark ? 'dark' : 'light');
+                this.currentIndex = (this.currentIndex + 1) % this.themes.length;
+                this.applyTheme(this.themes[this.currentIndex]);
             }
         };
 
-        // ==================== ADVANCED MODULE ====================
-        const Advanced = {
-            isEnabled: false,
+        // ==================== SETTINGS MODULE ====================
+        const Settings = {
+            advancedEnabled: false,
 
             init() {
-                this.isEnabled = localStorage.getItem('advancedMode') === 'true';
-                this.updateUI();
-                UI.elements.advancedBtn.addEventListener('click', () => this.toggle());
+                this.advancedEnabled = localStorage.getItem('advancedMode') === 'true';
+                this.updateAdvancedUI();
+
+                UI.elements.settingsBtn.addEventListener('click', () => this.show());
+                UI.elements.settingsClose.addEventListener('click', () => this.hide());
+
+                // Notify toggle
+                UI.elements.settingsNotifyToggle.addEventListener('change', () => {
+                    if (UI.elements.settingsNotifyToggle.checked) {
+                        Notification.requestPermission();
+                    }
+                });
+
+                // Mute toggle
+                UI.elements.settingsMuteToggle.addEventListener('change', () => {
+                    Mute.toggle();
+                });
+
+                // Advanced toggle
+                UI.elements.settingsAdvancedToggle.addEventListener('change', () => {
+                    this.advancedEnabled = UI.elements.settingsAdvancedToggle.checked;
+                    localStorage.setItem('advancedMode', this.advancedEnabled);
+                    this.updateAdvancedUI();
+                });
+
+                // Theme button
+                UI.elements.settingsThemeBtn.addEventListener('click', () => {
+                    Theme.toggle();
+                    this.updateThemeButton();
+                });
+
+                // Data buttons
+                UI.elements.settingsExportBtn.addEventListener('click', () => {
+                    DataManager.export();
+                });
+                UI.elements.settingsImportBtn.addEventListener('click', () => {
+                    DataManager.import();
+                });
+                UI.elements.settingsImageBtn.addEventListener('click', () => {
+                    this.hide();
+                    DataManager.exportImage();
+                });
             },
 
-            toggle() {
-                this.isEnabled = !this.isEnabled;
-                localStorage.setItem('advancedMode', this.isEnabled);
-                this.updateUI();
+            show() {
+                this.updateToggleStates();
+                this.updateThemeButton();
+                UI.elements.settingsModal.classList.add('show');
             },
 
-            updateUI() {
+            hide() {
+                UI.elements.settingsModal.classList.remove('show');
+            },
+
+            updateToggleStates() {
+                // Notify
+                UI.elements.settingsNotifyToggle.checked =
+                    'Notification' in window && window.Notification.permission === 'granted';
+
+                // Mute
+                UI.elements.settingsMuteToggle.checked = Mute.isMuted;
+
+                // Advanced
+                UI.elements.settingsAdvancedToggle.checked = this.advancedEnabled;
+            },
+
+            updateThemeButton() {
+                const currentTheme = Theme.themes[Theme.currentIndex];
+                UI.elements.settingsThemeBtn.textContent = `THEME: ${currentTheme.toUpperCase()}`;
+            },
+
+            updateAdvancedUI() {
                 const advancedElements = document.querySelectorAll('.advanced-only');
-                if (this.isEnabled) {
+                if (this.advancedEnabled) {
                     UI.elements.advancedControls.classList.add('show');
-                    UI.elements.advancedBtn.classList.add('active');
                     advancedElements.forEach(el => el.classList.add('show'));
                 } else {
                     UI.elements.advancedControls.classList.remove('show');
-                    UI.elements.advancedBtn.classList.remove('active');
                     advancedElements.forEach(el => el.classList.remove('show'));
                 }
             }
@@ -2264,24 +2474,12 @@
         // ==================== NOTIFICATION MODULE ====================
         const Notification = {
             init() {
-                this.updateButton();
-                UI.elements.notificationBtn.addEventListener('click', () => this.requestPermission());
+                // Notification permission is handled via Settings modal
             },
 
             requestPermission() {
                 if ('Notification' in window) {
-                    window.Notification.requestPermission().then(() => this.updateButton());
-                }
-            },
-
-            updateButton() {
-                if ('Notification' in window) {
-                    if (window.Notification.permission === 'granted') {
-                        UI.elements.notificationBtn.classList.add('granted');
-                        UI.elements.notificationBtn.textContent = 'NOTIFY ON';
-                    } else if (window.Notification.permission === 'denied') {
-                        UI.elements.notificationBtn.textContent = 'NOTIFY OFF';
-                    }
+                    window.Notification.requestPermission();
                 }
             },
 
@@ -2389,24 +2587,11 @@
 
             init() {
                 this.isMuted = localStorage.getItem('pomodoroMuted') === 'true';
-                this.updateUI();
-                UI.elements.muteBtn.addEventListener('click', () => this.toggle());
             },
 
             toggle() {
                 this.isMuted = !this.isMuted;
                 localStorage.setItem('pomodoroMuted', this.isMuted);
-                this.updateUI();
-            },
-
-            updateUI() {
-                if (this.isMuted) {
-                    UI.elements.muteBtn.textContent = 'UNMUTE';
-                    UI.elements.muteBtn.classList.add('active');
-                } else {
-                    UI.elements.muteBtn.textContent = 'MUTE';
-                    UI.elements.muteBtn.classList.remove('active');
-                }
             }
         };
 
@@ -2442,9 +2627,9 @@
                     UI.elements.statusText.textContent = 'CAPTURING...';
                     UI.elements.statusDot.classList.add('saving');
 
-                    // Get computed styles to determine colors
-                    const isDark = document.body.classList.contains('dark');
-                    const bgColor = isDark ? '#000000' : '#ffffff';
+                    // Get background color from current theme
+                    const computedStyle = getComputedStyle(document.body);
+                    const bgColor = computedStyle.getPropertyValue('--bg').trim() || '#ffffff';
 
                     const canvas = await html2canvas(heatmapSection, {
                         backgroundColor: bgColor,
@@ -2570,10 +2755,6 @@
             UI.elements.mode50.addEventListener('click', () => Timer.setMode('50/10'));
             UI.elements.modeCustom.addEventListener('click', () => Timer.setMode('custom'));
 
-            UI.elements.exportBtn.addEventListener('click', () => DataManager.export());
-            UI.elements.importBtn.addEventListener('click', () => DataManager.import());
-            UI.elements.exportImageBtn.addEventListener('click', () => DataManager.exportImage());
-
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -2622,7 +2803,7 @@
             Timer.init();
             Quote.init();
             Theme.init();
-            Advanced.init();
+            Settings.init();
             Notification.init();
             Modals.init();
             SessionManager.init();
