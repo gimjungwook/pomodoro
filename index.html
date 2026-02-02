@@ -878,6 +878,40 @@
             color: var(--bg);
         }
 
+        /* Tag Selection Modal */
+        .tag-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .tag-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 16px;
+            font-size: 0.5rem;
+            font-family: inherit;
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.1s;
+            min-width: 70px;
+        }
+
+        .tag-btn:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .tag-icon {
+            font-size: 1.2rem;
+        }
+
         /* Settings Modal */
         .settings-options {
             display: flex;
@@ -1139,6 +1173,24 @@
         </div>
     </div>
 
+    <!-- Tag Selection Modal -->
+    <div class="modal" id="tagModal" role="dialog" aria-modal="true">
+        <div class="modal-content pixel-border">
+            <h2 data-i18n="selectTag">SELECT TAG</h2>
+            <div class="tag-options">
+                <button class="tag-btn pixel-border-thin" data-tag="study"><span class="tag-icon">📚</span><span data-i18n="tagStudy">STUDY</span></button>
+                <button class="tag-btn pixel-border-thin" data-tag="coding"><span class="tag-icon">💻</span><span data-i18n="tagCoding">CODING</span></button>
+                <button class="tag-btn pixel-border-thin" data-tag="exercise"><span class="tag-icon">🏃</span><span data-i18n="tagExercise">EXERCISE</span></button>
+                <button class="tag-btn pixel-border-thin" data-tag="reading"><span class="tag-icon">📖</span><span data-i18n="tagReading">READING</span></button>
+                <button class="tag-btn pixel-border-thin" data-tag="work"><span class="tag-icon">💼</span><span data-i18n="tagWork">WORK</span></button>
+                <button class="tag-btn pixel-border-thin" data-tag="other"><span class="tag-icon">📌</span><span data-i18n="tagOther">OTHER</span></button>
+            </div>
+            <div class="modal-buttons" style="margin-top: 15px;">
+                <button class="modal-btn pixel-border-thin" id="tagSkip" data-i18n="skip">SKIP</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Modal -->
     <div class="modal" id="settingsModal" role="dialog" aria-modal="true">
         <div class="modal-content pixel-border">
@@ -1359,7 +1411,16 @@
                 importTitle: 'IMPORT DATA?',
                 importMessage: 'This will overwrite current data.',
                 importConfirm: 'IMPORT',
-                invalidFile: 'Invalid file format'
+                invalidFile: 'Invalid file format',
+                // Tags
+                selectTag: 'SELECT TAG',
+                tagStudy: 'STUDY',
+                tagCoding: 'CODING',
+                tagExercise: 'EXERCISE',
+                tagReading: 'READING',
+                tagWork: 'WORK',
+                tagOther: 'OTHER',
+                skip: 'SKIP'
             },
             ko: {
                 // Header
@@ -1443,7 +1504,16 @@
                 importTitle: '데이터 가져오기?',
                 importMessage: '현재 데이터를 덮어씁니다.',
                 importConfirm: '가져오기',
-                invalidFile: '잘못된 파일 형식입니다'
+                invalidFile: '잘못된 파일 형식입니다',
+                // Tags
+                selectTag: '태그 선택',
+                tagStudy: '공부',
+                tagCoding: '코딩',
+                tagExercise: '운동',
+                tagReading: '독서',
+                tagWork: '업무',
+                tagOther: '기타',
+                skip: '스킵'
             },
             ja: {
                 // Header
@@ -1527,7 +1597,16 @@
                 importTitle: 'データをインポート？',
                 importMessage: '現在のデータが上書きされます。',
                 importConfirm: 'インポート',
-                invalidFile: '無効なファイル形式です'
+                invalidFile: '無効なファイル形式です',
+                // Tags
+                selectTag: 'タグ選択',
+                tagStudy: '勉強',
+                tagCoding: 'コーディング',
+                tagExercise: '運動',
+                tagReading: '読書',
+                tagWork: '仕事',
+                tagOther: 'その他',
+                skip: 'スキップ'
             }
         };
 
@@ -1756,7 +1835,9 @@
                     quoteInput: document.getElementById('quoteInput'),
                     quoteSave: document.getElementById('quoteSave'),
                     quoteCancel: document.getElementById('quoteCancel'),
-                    focusModal: document.getElementById('focusModal')
+                    focusModal: document.getElementById('focusModal'),
+                    tagModal: document.getElementById('tagModal'),
+                    tagSkip: document.getElementById('tagSkip')
                 };
             },
 
@@ -2233,12 +2314,28 @@
             }
         };
 
-        // ==================== STATS MODULE (Simplified) ====================
+        // ==================== STATS MODULE (Optimized with caching) ====================
         const Stats = {
-            calculateStreak() {
-                const sessions = Storage.loadSessions();
-                let streak = 0;
+            cache: { hash: null, streak: 0, totalMinutes: 0, peakHour: null },
 
+            getSessionsHash(sessions) {
+                // Simple hash based on session count and last date
+                const keys = Object.keys(sessions);
+                const count = keys.reduce((sum, k) => sum + sessions[k].length, 0);
+                return `${keys.length}-${count}-${keys[keys.length - 1] || ''}`;
+            },
+
+            calculate() {
+                const sessions = Storage.loadSessions();
+                const hash = this.getSessionsHash(sessions);
+
+                // Return cached values if unchanged
+                if (hash === this.cache.hash) {
+                    return { streak: this.cache.streak, totalMinutes: this.cache.totalMinutes, peakHour: this.cache.peakHour };
+                }
+
+                // Calculate streak
+                let streak = 0;
                 const today = Storage.getDateKey();
                 let checkDate = new Date();
 
@@ -2256,37 +2353,35 @@
                     }
                 }
 
-                return streak;
-            },
-
-            findPeakHour() {
-                const sessions = Storage.loadSessions();
+                // Calculate total time and peak hour
                 const hourCounts = new Array(24).fill(0);
+                let totalMinutes = 0;
 
                 Object.values(sessions).flat().forEach(s => {
-                    if (s.type === 'work' && s.startTime) {
-                        const hour = parseInt(s.startTime.split(':')[0]);
-                        hourCounts[hour] += s.duration;
+                    if (s.type === 'work') {
+                        totalMinutes += s.duration;
+                        if (s.startTime) {
+                            const hour = parseInt(s.startTime.split(':')[0]);
+                            hourCounts[hour] += s.duration;
+                        }
                     }
                 });
 
                 const maxMinutes = Math.max(...hourCounts);
-                if (maxMinutes === 0) return null;
+                const peakHour = maxMinutes > 0 ? hourCounts.indexOf(maxMinutes) : null;
 
-                const peakHour = hourCounts.indexOf(maxMinutes);
-                return peakHour;
+                // Update cache
+                this.cache = { hash, streak, totalMinutes, peakHour };
+
+                return { streak, totalMinutes, peakHour };
             },
 
-            getTotalTime() {
-                const sessions = Storage.loadSessions();
-                const allSessions = Object.values(sessions).flat().filter(s => s.type === 'work');
-                return allSessions.reduce((sum, s) => sum + s.duration, 0);
+            invalidateCache() {
+                this.cache.hash = null;
             },
 
             update() {
-                const streak = this.calculateStreak();
-                const totalMinutes = this.getTotalTime();
-                const peakHour = this.findPeakHour();
+                const { streak, totalMinutes, peakHour } = this.calculate();
 
                 UI.elements.statStreak.textContent = `STREAK: ${streak}`;
 
@@ -2306,6 +2401,7 @@
         const Heatmap = {
             init() {
                 UI.elements.heatmapHours.innerHTML = '';
+                const hoursFragment = document.createDocumentFragment();
                 for (let i = 0; i < 24; i++) {
                     const label = document.createElement('div');
                     label.className = 'hour-label';
@@ -2313,8 +2409,15 @@
                         label.textContent = i.toString().padStart(2, '0');
                         label.classList.add('visible');
                     }
-                    UI.elements.heatmapHours.appendChild(label);
+                    hoursFragment.appendChild(label);
                 }
+                UI.elements.heatmapHours.appendChild(hoursFragment);
+
+                // Event delegation for heatmap grid
+                UI.elements.heatmapGrid.addEventListener('mouseenter', this.handleMouseEnter.bind(this), true);
+                UI.elements.heatmapGrid.addEventListener('mouseleave', this.handleMouseLeave.bind(this), true);
+                UI.elements.heatmapGrid.addEventListener('mousemove', this.handleMouseMove.bind(this), true);
+                UI.elements.heatmapGrid.addEventListener('click', this.handleClick.bind(this));
 
                 this.render();
             },
@@ -2358,7 +2461,6 @@
                 const daysData = dates.map(dateKey => {
                     const daySessions = sessions[dateKey] || [];
                     const hoursData = new Array(24).fill(0);
-                    // 집중도 데이터: { weightedSum, minutesWithFocus }
                     const hoursFocusData = new Array(24).fill(null).map(() => ({ weightedSum: 0, minutesWithFocus: 0 }));
 
                     daySessions.forEach(session => {
@@ -2375,7 +2477,6 @@
                                 const minutesInThisHour = Math.min(remaining, 60 - currentMinute);
                                 hoursData[currentHour] += minutesInThisHour;
 
-                                // 집중도 가중치 계산
                                 if (hasFocus) {
                                     hoursFocusData[currentHour].weightedSum += minutesInThisHour * session.focus;
                                     hoursFocusData[currentHour].minutesWithFocus += minutesInThisHour;
@@ -2410,16 +2511,19 @@
                     return { dateKey, hoursData, hoursFocusData };
                 });
 
-                UI.elements.heatmapDates.innerHTML = '';
+                // Use DocumentFragment for batch DOM updates
+                const datesFragment = document.createDocumentFragment();
                 daysData.forEach(({ dateKey }) => {
                     const label = document.createElement('div');
                     label.className = 'date-label';
                     const [, , day] = dateKey.split('-');
                     label.textContent = day;
-                    UI.elements.heatmapDates.appendChild(label);
+                    datesFragment.appendChild(label);
                 });
+                UI.elements.heatmapDates.innerHTML = '';
+                UI.elements.heatmapDates.appendChild(datesFragment);
 
-                UI.elements.heatmapGrid.innerHTML = '';
+                const gridFragment = document.createDocumentFragment();
                 daysData.forEach(({ dateKey, hoursData, hoursFocusData }) => {
                     const dayColumn = document.createElement('div');
                     dayColumn.className = 'heatmap-day';
@@ -2434,7 +2538,6 @@
                             cell.classList.add(`filled-${level}`);
                         }
 
-                        // 집중도 클래스 추가
                         const focusData = hoursFocusData[hour];
                         let avgFocus = -1;
                         if (focusData.minutesWithFocus > 0) {
@@ -2451,27 +2554,26 @@
                         cell.dataset.minutes = minutes;
                         cell.dataset.focus = avgFocus;
 
-                        cell.addEventListener('mouseenter', this.showTooltip);
-                        cell.addEventListener('mouseleave', this.hideTooltip);
-                        cell.addEventListener('mousemove', this.moveTooltip);
-                        cell.addEventListener('click', () => SessionManager.showSessions(dateKey));
-
                         dayColumn.appendChild(cell);
                     }
 
-                    UI.elements.heatmapGrid.appendChild(dayColumn);
+                    gridFragment.appendChild(dayColumn);
                 });
+                UI.elements.heatmapGrid.innerHTML = '';
+                UI.elements.heatmapGrid.appendChild(gridFragment);
 
-                // 아래에 일별 총 시간 표시
-                UI.elements.heatmapTimes.innerHTML = '';
+                // Use DocumentFragment for times
+                const timesFragment = document.createDocumentFragment();
                 daysData.forEach(({ hoursData }) => {
                     const label = document.createElement('div');
                     label.className = 'time-label';
                     const totalMinutesForDay = hoursData.reduce((sum, min) => sum + min, 0);
                     const hours = (totalMinutesForDay / 60).toFixed(1);
                     label.textContent = hours;
-                    UI.elements.heatmapTimes.appendChild(label);
+                    timesFragment.appendChild(label);
                 });
+                UI.elements.heatmapTimes.innerHTML = '';
+                UI.elements.heatmapTimes.appendChild(timesFragment);
 
                 UI.elements.totalSessions.innerHTML = `${totalSessions} <span>${Language.t('sessions')}</span>`;
                 Stats.update();
@@ -2479,6 +2581,28 @@
 
             update() {
                 this.render();
+            },
+
+            // Event delegation handlers
+            handleMouseEnter(e) {
+                if (!e.target.classList.contains('heatmap-cell')) return;
+                this.showTooltip(e);
+            },
+
+            handleMouseLeave(e) {
+                if (!e.target.classList.contains('heatmap-cell')) return;
+                this.hideTooltip();
+            },
+
+            handleMouseMove(e) {
+                if (!e.target.classList.contains('heatmap-cell')) return;
+                this.moveTooltip(e);
+            },
+
+            handleClick(e) {
+                if (!e.target.classList.contains('heatmap-cell')) return;
+                const dateKey = e.target.dataset.date;
+                if (dateKey) SessionManager.showSessions(dateKey);
             },
 
             showTooltip(e) {
@@ -2492,7 +2616,6 @@
                 const hourNum = parseInt(hour);
                 const minNum = parseInt(minutes);
 
-                // 집중도 표시
                 let focusDisplay = '';
                 if (focus >= 0) {
                     if (focus === 3) focusDisplay = '<br>FOCUS: ★★★';
@@ -2593,6 +2716,14 @@
 
             init() {
                 UI.elements.sessionClose.addEventListener('click', () => this.hideModal());
+                // Event delegation for delete buttons
+                UI.elements.sessionList.addEventListener('click', async (e) => {
+                    if (e.target.classList.contains('session-delete')) {
+                        e.stopPropagation();
+                        const index = parseInt(e.target.dataset.index);
+                        await this.deleteSession(index);
+                    }
+                });
             },
 
             showSessions(dateKey) {
@@ -2607,7 +2738,6 @@
                     UI.elements.sessionList.innerHTML = `<div class="session-empty">${Language.t('noSessions')}</div>`;
                 } else {
                     UI.elements.sessionList.innerHTML = daySessions.map((session, index) => {
-                        // 집중도 표시
                         let focusDisplay = '';
                         if (session.focus !== undefined) {
                             if (session.focus === 3) focusDisplay = '★★★';
@@ -2616,25 +2746,18 @@
                             else focusDisplay = '?';
                         }
 
+                        const tagIcon = session.tag ? Tags.getIcon(session.tag) : '';
+
                         return `
                             <div class="session-item">
                                 <div class="session-info">
-                                    <div>${session.duration}M ${session.completed ? '✓' : '(INCOMPLETE)'} ${focusDisplay}</div>
+                                    <div>${tagIcon} ${session.duration}M ${session.completed ? '✓' : '(INCOMPLETE)'} ${focusDisplay}</div>
                                     <div class="session-time">${session.startTime} - ${session.endTime}</div>
                                 </div>
                                 <button class="session-delete" data-index="${index}">DELETE</button>
                             </div>
                         `;
                     }).join('');
-
-                    // Bind delete buttons
-                    UI.elements.sessionList.querySelectorAll('.session-delete').forEach(btn => {
-                        btn.addEventListener('click', async (e) => {
-                            e.stopPropagation();
-                            const index = parseInt(btn.dataset.index);
-                            await this.deleteSession(index);
-                        });
-                    });
                 }
 
                 UI.elements.sessionModal.classList.add('show');
@@ -2654,7 +2777,7 @@
 
                 if (confirmed) {
                     Storage.deleteSession(this.currentDate, index);
-                    this.showSessions(this.currentDate); // Refresh list
+                    this.showSessions(this.currentDate);
                 }
             }
         };
@@ -3024,7 +3147,17 @@
                 // Register Service Worker
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('./sw.js')
-                        .then(() => console.log('SW registered'))
+                        .then((reg) => {
+                            console.log('SW registered');
+                            reg.addEventListener('updatefound', () => {
+                                const newWorker = reg.installing;
+                                newWorker.addEventListener('statechange', () => {
+                                    if (newWorker.state === 'activated') {
+                                        window.location.reload();
+                                    }
+                                });
+                            });
+                        })
                         .catch((err) => console.log('SW registration failed:', err));
                 }
 
@@ -3297,7 +3430,7 @@
                 buttons.forEach(btn => {
                     btn.addEventListener('click', () => {
                         const rating = parseInt(btn.dataset.rating);
-                        this.saveWithRating(rating);
+                        this.setRatingAndShowTags(rating);
                     });
                 });
             },
@@ -3309,15 +3442,22 @@
 
             hide() {
                 UI.elements.focusModal.classList.remove('show');
-                this.pendingSession = null;
             },
 
-            saveWithRating(rating) {
+            setRatingAndShowTags(rating) {
                 if (this.pendingSession) {
                     this.pendingSession.focus = rating;
-                    Storage.addSession(this.pendingSession);
                 }
                 this.hide();
+                // Show tag selection modal
+                Tags.show();
+            },
+
+            saveSession() {
+                if (this.pendingSession) {
+                    Storage.addSession(this.pendingSession);
+                    this.pendingSession = null;
+                }
             },
 
             // 평가 전 새로고침 시 호출
@@ -3327,6 +3467,56 @@
                     Storage.addSession(this.pendingSession);
                     this.pendingSession = null;
                 }
+            }
+        };
+
+        // ==================== TAGS MODULE ====================
+        const Tags = {
+            icons: {
+                study: '📚',
+                coding: '💻',
+                exercise: '🏃',
+                reading: '📖',
+                work: '💼',
+                other: '📌'
+            },
+
+            init() {
+                // Event delegation for tag buttons
+                UI.elements.tagModal.querySelector('.tag-options').addEventListener('click', (e) => {
+                    const btn = e.target.closest('.tag-btn');
+                    if (btn) {
+                        const tag = btn.dataset.tag;
+                        this.selectTag(tag);
+                    }
+                });
+
+                // Skip button
+                UI.elements.tagSkip.addEventListener('click', () => {
+                    this.selectTag(null);
+                });
+            },
+
+            show() {
+                UI.elements.tagModal.classList.add('show');
+            },
+
+            hide() {
+                UI.elements.tagModal.classList.remove('show');
+            },
+
+            selectTag(tag) {
+                if (FocusRating.pendingSession) {
+                    if (tag) {
+                        FocusRating.pendingSession.tag = tag;
+                    }
+                }
+                this.hide();
+                FocusRating.saveSession();
+            },
+
+            getIcon(tag) {
+                return this.icons[tag] || '';
             }
         };
 
@@ -3406,6 +3596,7 @@
             PWA.init();
             TTS.init();
             FocusRating.init();
+            Tags.init();
             Mute.init();
             bindEvents();
 
