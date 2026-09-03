@@ -1,0 +1,38 @@
+{
+  "name": "pomodoro-electron",
+  "version": "1.0.0",
+  "description": "Pomodoro Timer with System Music Integration",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:all": "electron-builder --mac --win"
+  },
+  "build": {
+    "appId": "com.pomodoro.app",
+    "productName": "Pomodoro Timer",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "assets/icon.icns",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": ["nsis", "portable"]
+    }
+  },
+  "keywords": ["pomodoro", "timer", "productivity", "music"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "optionalDependencies": {
+    "@aspect-build/aspect-rules-js": "^0.4.4"
+  }
+}
